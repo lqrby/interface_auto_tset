@@ -5,7 +5,7 @@ def queryUsers():
     #3执行查询，并获取查询的用户总行数
     '''
     cursor,conn = queryCursos()
-    rowNums = cursor.execute('SELECT id,nickname,mobile FROM tb_user limit 27,220')
+    rowNums = cursor.execute('SELECT id,nickname,mobile FROM tb_user limit 35,20')
     print('查询的行数为' + str(rowNums))
     #4.遍历结果，获取查询的结果
     ResultList = cursor.fetchall()

@@ -40,8 +40,8 @@ class LoginAndZhuCe(TaskSet):
                 "Content-Type": "application/json; charset=utf-8",
                 "User-Agent":"okhttp/2.7.5",
                 "Connection": "keep-alive",
-                "Accept-Encoding":"gzip",
-                "Host":"192.168.1.30"
+                "Accept-Encoding":"gzip"
+                # "Host":"192.168.1.30"
             }
             zcm_response.success()
         else:
@@ -73,7 +73,7 @@ class LoginAndZhuCe(TaskSet):
         self.ZhuCeMa()
         try:
             # mobile = self.locust.queueMobile.get()  #获取队列里的数据
-            mobile = "15188371841"  #获取队列里的数据
+            mobile = "15001200239"  #获取队列里的数据
         except queue.Empty:                     #队列取空后，直接退出
             print('no data exist')
             exit(0)
@@ -96,7 +96,7 @@ class LoginAndZhuCe(TaskSet):
             "code": str(code),
             "gid": "866215038845167", #str(int(round(time.time() * 100000)))
             "mobile": str(mobile),
-            "type":2,
+            "type":1,
             "resource":1
         }
         registerUrl = "/gateway/member/mobileregister"

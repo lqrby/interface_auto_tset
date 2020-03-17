@@ -13,6 +13,7 @@ class PublicRequest(TaskSet):
     def publicRequest(self,url,urlName,public_data,header):
         public_data = json.dumps(public_data)
         with self.client.post(url,data = public_data,headers = header,name = urlName+url,verify = False,allow_redirects=False,catch_response=True) as response:
+            print("响应结果======{}".format(response.text))
             result = json.loads(response.text)
             if "code" in result and result["code"] == 200 or result["code"] == "200":
                 time.sleep(random.randint(1,3))

@@ -24,7 +24,6 @@ class LiuCheng(TaskSet):
         # LoginAndZhuCe(self).userRegister() #注册
         self.loginUserData = LoginAndZhuCe(self).userLogin() 
         self.loginUser = self.loginUserData["data"]
-        print("------------------------------:{}".format(self.loginUser))
         self.loginUser["location"]= {
             "address": '北京市通州区', #fake.company(),
             "lon": 116.63309759819349,
@@ -34,7 +33,7 @@ class LiuCheng(TaskSet):
 
     # @task(1) 
     def guanZhu(self):
-        uid = 10001
+        uid = 10351
         userItem = HomePage(self).fuJinDeRen_Detail(self.header,uid) #获取用户详情
         PublicFunction(self).FocusOnly(self.header,userItem)
 
@@ -78,6 +77,10 @@ class LiuCheng(TaskSet):
                 # 发布动态
                 HomePage(self).newDynamics(self.header)
 
+    @task(1)        
+    def fadongtai(self):
+        # 发布动态
+        HomePage(self).newDynamics(self.header)
 
     '''
     # 附近的价值列表》查看价值详情 》点赞 》发布价值
@@ -115,22 +118,26 @@ class LiuCheng(TaskSet):
     '''  
     # @task(1)        
     def myWallet(self):
-        # 去审核
+        # 获取审核任务
         if self.loginUser["userType"] == 2:
             qushenhe_res = WoDeQianBao(self).quShenHe(self.header)
             i = 1
             while "code" in qushenhe_res and qushenhe_res["code"] == 468:
+                # 提交审核结果
                 qushenhe_res = WoDeQianBao(self).quShenHe(self.header)
                 if i>100:
                     # self.interrupt()
                     break
                 i += i
-            # 审核
+            
             if 'code' in qushenhe_res and qushenhe_res["code"] == 200:
                 obj = qushenhe_res["data"]["reviewId"]
                 WoDeQianBao(self).shenHe(self.header,obj)
-            else:
+            elif 'code' in qushenhe_res and qushenhe_res["code"] == 468:
+                print("丫的，获取任务一百次都没有任务")
+            else: 
                 print("xxx提交异常或审核超时xxx{}".format(qushenhe_res))
+
         else:
             print("----该用户没有审核权限---{}".format(self.loginUser))
             self.interrupt()
@@ -143,6 +150,7 @@ class WebsiteUser(HttpLocust):
     min_wait = 600
     max_wait = 1000
     host = "http://192.168.1.30"
+    # host = "http://dev.ytime365.com"
     users = queryUsers() #多个用户
     print(queryUsers(),type(queryUsers()))
     queueData = queue.Queue()

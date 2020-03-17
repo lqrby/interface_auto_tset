@@ -11,31 +11,31 @@ from test_script.publicscript.publicRequestMethod import PublicRequest
 # 我的钱包
 class WoDeQianBao(TaskSet):
     '''
-    # 去审核  
+    # 去审核  （获取审核任务）
     '''        
     # @task(1)  
     def quShenHe(self,header):
         qsh_url = "/gateway/member/openReview"
-        qsh_urlName = "去审核"
+        qsh_urlName = "获取审核任务"
         qsh_res = PublicRequest(self).requestMethod(qsh_url, qsh_urlName, {}, header)
         return json.loads(qsh_res.text)
         
     '''
-    # 审核  
+    # 提交审核结果  
     '''                
     def shenHe(self,header,reviewId):
         time.sleep(random.uniform(10,20))
-        num = random.choice(["111","000","111","111","111","011","111","100","111","111","101","111","010","111"])
+        num = random.choice(["111","111","111","000","111","111","111","001","111","111","011","111","111","111","100","111","111","111","111","101","111","111","111","010","111","111","111"])
         sh_data = {
             "reviewResult": num,
             "reviewId": reviewId
         }
-        sh_url = "/gateway/member/openReview"
-        sh_urlName = "审核"
+        sh_url = "/gateway/member/reviewResult"
+        sh_urlName = "提交审核结果"
         shenHe_res =  PublicRequest(self).publicRequest(sh_url, sh_urlName, sh_data, header)
         if shenHe_res:
             print("审核完毕，坐等奖励！！！")
-            time.sleep(random.uniform(0.1,1)) 
+            time.sleep(random.uniform(0.1,2)) 
         
         
 

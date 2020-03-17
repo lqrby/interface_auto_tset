@@ -10,6 +10,7 @@ from common.pictures import SelectPictures
 class HomePage(TaskSet):
     # @task(1)
     # @seq_task(1)
+    # 上传图片
     def fuJinDeRen_list(self,header):
         '''
         # 附近的人列表  
@@ -94,16 +95,22 @@ class HomePage(TaskSet):
         dynamics
         '''    
         fake = Faker("zh_CN")
-        lonAndLat = fake.local_latlng(country_code="CN", coords_only=False)
-        lat = lonAndLat[0]
-        lon = lonAndLat[1]
+        # lonAndLat = fake.local_latlng(country_code="CN", coords_only=False)
+        # lat = lonAndLat[0]
+        # lon = lonAndLat[1]
+        lat = round(random.uniform(37, 41), 14)#lonAndLat[0]
+        lon = round(random.uniform(112, 119), 14)#lonAndLat[1]
         picArr = []
         power_data = self.getPicturePermission(header)
         power = power_data["data"]
         if 'status' in power and power["status"] == 0:
-            # for i in range(random.randint(0,10)):
-            #     picArr.append(fake.image_url())
-            picArr = SelectPictures(self).dongTaiPicture()
+           picArr = SelectPictures(self).dongTaiPicture()
+            # pictureArr,imgdir = self.get_picture()
+            # picArr = random.sample(pictureArr,random.randint(1,10))
+            # picArr2 = []
+            # for pic in picArr:
+            #     picstr = imgdir +"/"+ pic
+            #     picArr2.append(picstr)
         newdtData = {
             "noticeusersid": 0,
             "seeby": 0,
@@ -114,7 +121,7 @@ class HomePage(TaskSet):
             },
             "avatar": picArr,
             "contentType": 2,
-            "content": fake.sentence(nb_words=6, variable_nb_words=True, ext_word_list=None)
+            "content": self.Filter_sensitiveWords(fake.sentence(nb_words=6, variable_nb_words=True, ext_word_list=None))
         }
         newdt_url = "/gateway/member/pushdynamic"
         newdt_urlName = "发布动态"
@@ -175,29 +182,35 @@ class HomePage(TaskSet):
         # 发布价值  
         '''  
         fake = Faker("zh_CN")
-        lonAndLat = fake.local_latlng(country_code="CN", coords_only=False)
-        lat = lonAndLat[0]
-        lon = lonAndLat[1]
+        # lonAndLat = fake.local_latlng(country_code="CN", coords_only=False)
+        lat = round(random.uniform(37, 41), 14)#lonAndLat[0]
+        lon = round(random.uniform(112, 119), 14)#lonAndLat[1]
         #生成随机数，浮点类型
         tpyzm_res = self.coverCode(header)
-        print("userId====={}".format(userId))
-        images = self.uploadoss(self.generateSign(header),userId)
+        images,millis = self.uploadoss(self.generateSign(header),userId)
+        kssj = time.strftime('%Y.%m.%d %H:%M:%S ',time.localtime(time.time()))
+        print("起始时间:{}".format(kssj)) 
+        title = self.Filter_sensitiveWords(fake.company_prefix()) #书籍名称
+        demo = self.Filter_sensitiveWords(fake.text(max_nb_chars=200, ext_word_list=None)) #书籍简介
+        jssj = time.strftime('%Y.%m.%d %H:%M:%S ',time.localtime(time.time()))
+        print("结束时间:",jssj)
+        # print("总共耗时:",jssj - kssj)
         fjz_data = {
             "images":images,
             "code": tpyzm_res["data"]["smsCode"],
             "wid": 0,
             "price": round(random.uniform(1, 200), 2),
-            "ctime": int(round(time.time() * 1000)),
+            "ctime": millis,
             "location": {
                 "address": fake.company(),
                 "lon": float(lon),
                 "lat": float(lat)
             },
             "exchangetype": 1,
-            "title": fake.company_prefix(),
+            "title": title,
             "category": 5,
             "type": 0,
-            "demo": fake.text(max_nb_chars=200, ext_word_list=None)
+            "demo": demo
         }
         fjz_url = "/gateway/member/addgoods"
         fjz_urlName = "发布价值"
@@ -223,27 +236,48 @@ class HomePage(TaskSet):
         accessKeySecret = generateSign["data"]["accessKeySecret"]
         securityToken = generateSign["data"]["securityToken"]
         accesskeyId = generateSign["data"]["accessKeyId"]
-        bucket_name = 'public-tbank'
+        # millis = generateSign["data"]["expiration"]
+        bucket_name = 'youtime-test'
         endpoint = 'oss-cn-beijing.aliyuncs.com'
         # 创建存储空间实例，所有文件相关的方法都需要通过存储空间实例来调用。
         # ossAuth = oss2.Auth(accesskeyId, accessKeySecret)
         ossAuth = oss2.StsAuth(accesskeyId, accessKeySecret,securityToken)
         bucket = oss2.Bucket(ossAuth, endpoint, bucket_name) #enable_crc=False
         # 上传图片
-        imgArr = SelectPictures(self).jiaZhiPicture()
+        pictures,imgdir = self.get_picture()
+        imgArr = random.sample(pictures,3)
+        print("imgArr===={}".format(imgArr))
         imgArr2 = []
         millis = int(round(time.time() * 1000))
         for i, img_path in enumerate(imgArr):
             key = "{}{}{}.png".format(str(millis),str(userId),str(i+1))
-            result = bucket.put_object_from_file(key, img_path)
-            print("result===={}==={}".format(key,result.status))
+            bucket.put_object_from_file(key, imgdir+"/"+img_path)
+            # print("result===={}==={}".format(key,result.status))
             # 生成带签名的URL，并指定过期时间为10分钟。过期时间单位是秒。
             style = 'image/resize,m_fixed,w_100,h_100/rotate,90'
             url = bucket.sign_url('GET', key, 10 * 60, params={'x-oss-process': style})
             # ret = bucket.sign_url('GET', key, 60*60*24)  # 返回值为链接，参数依次为，方法/oss上文件路径/过期时间(s)
             imgArr2.append(url.split("?")[0])
         print("价值图片===={}".format(imgArr2))
-        return imgArr2
+        return imgArr2,millis
+    
+    def get_picture(self):
+        """
+        获取图片文件夹中所有图片地址
+        """
+        imgdir = "F:/myTestFile/TestObject/YouTime/img/jiazhi"
+        return os.listdir(imgdir),imgdir
+
+
+    def Filter_sensitiveWords(self,text):
+        """
+        过滤敏感词
+        """
+        name_list = ["投资", "交易", "测试"]
+        for name in name_list:
+            if name in text:
+                text = text.replace(name,"")
+        return text
 
     
     def generateSign(self,header):
