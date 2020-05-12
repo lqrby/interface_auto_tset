@@ -6,7 +6,7 @@ import random
 sys.path.append("F:/myTestFile/TestObject/YouTime")
 from Interface.QueryUsers import queryUsers
 from test_script.loginandregister.loginAndzhuCe import LoginAndZhuCe
-# 我的钱包
+
 class FaXiaoXi(TaskSet):
     '''
     # 发消息
@@ -16,7 +16,7 @@ class FaXiaoXi(TaskSet):
         self.header = self.loginResponse["header"]
         self.loginUser = self.loginResponse["data"]
         self.countter = 0   
-        self.txt = "1.17群聊消息=" 
+        self.txt = "4.14测试消息！=" 
     '''
     # 获取群组列表
     '''  
@@ -118,8 +118,8 @@ class FaXiaoXi(TaskSet):
             "fId":self.loginUser['uid'], #登录用户的id
             "fNm":self.loginUser['nickname'], #登录用户的名字
             "fRely":0,
-            "tId":20003, #群id
-            "tNm":"88888888" #群名称
+            "tId":20037, #群id
+            "tNm":"红满天1我的群" #群名称
             }  
         self.xiaoxiData = json.dumps(self.xiaoxiData)
         with self.client.post("/group/admin/groupChat", data = self.xiaoxiData, headers = self.header, verify = False, allow_redirects=False,catch_response=True) as response:

@@ -106,7 +106,7 @@ class SelectPictures(TaskSet):
             "https://youtime-test.oss-cn-beijing.aliyuncs.com/_1440_2560_/1577676823540.png", 
             "https://youtime-test.oss-cn-beijing.aliyuncs.com/_1440_2560_/1577676823541.png"
         ]
-        return random.sample(self.imgArr ,random.randint(1,10))      
+        return random.sample(self.imgArr ,random.randint(1,9))      
 	
     # def jiaZhiPicture(self):
     #     self.jzimgArr = [

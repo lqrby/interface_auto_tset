@@ -33,17 +33,21 @@ class LiuCheng(TaskSet):
 
     # @task(1) 
     def guanZhu(self):
+        """
+        关注
+        """
         uid = 10351
         userItem = HomePage(self).fuJinDeRen_Detail(self.header,uid) #获取用户详情
         PublicFunction(self).FocusOnly(self.header,userItem)
 
 
 
-    '''
-    # 附近的人列表》查看人员详情 》点赞 
-    '''  
-    # @task(1)        
+    
+    @task(1)        
     def fujinderen(self):
+        '''
+        # 附近的人列表》查看人员详情 》点赞 
+        '''  
         # 获取附近的人列表
         fjdrList_res = HomePage(self).fuJinDeRen_list(self.header)
         fjdrList = fjdrList_res["data"]
@@ -57,11 +61,12 @@ class LiuCheng(TaskSet):
                 # 给人员点赞
                 PublicFunction(self).dianZan(self.header, userdetail)
         
-    '''
-    # 附近的动态列表》查看动态详情 》点赞 
-    '''  
+    
     # @task(1)        
     def fujindongtai(self):
+        '''
+        # 附近的动态列表》查看动态详情 》点赞 
+        '''  
         # 获取附近动态列表
         fjdtList_res = HomePage(self).fuJinDongTai_list(self.header,self.loginUser)
         fjdtList = fjdtList_res["data"]
@@ -75,18 +80,19 @@ class LiuCheng(TaskSet):
                 # 给动态点赞
                 PublicFunction(self).dianZan(self.header, userdtdetail)
                 # 发布动态
-                HomePage(self).newDynamics(self.header)
+                # HomePage(self).newDynamics(self.header)
 
-    @task(1)        
+    # @task(1)        
     def fadongtai(self):
         # 发布动态
         HomePage(self).newDynamics(self.header)
 
-    '''
-    # 附近的价值列表》查看价值详情 》点赞 》发布价值
-    '''  
+    
     # @task(1)        
     def fujinjiaZhi(self):
+        '''
+        # 附近的价值列表》查看价值详情 》点赞 》发布价值
+        '''  
         # 获取附近价值列表
         fjjzList_res = HomePage(self).fuJinJiaZhi_list(self.header,self.loginUser)
         fjjzList = fjjzList_res["data"]
@@ -105,7 +111,7 @@ class LiuCheng(TaskSet):
         else:
             print("---不好意思没有数据---")
 
-    @task(1)        
+    # @task(1)        
     def fujinjiaZhi2(self):
         #发布价值
         print("uid:{}".format(self.loginUser["uid"]))
@@ -113,11 +119,12 @@ class LiuCheng(TaskSet):
 
 
 
-    '''
-    # 我的钱包》去审核 》审核 
-    '''  
+    
     # @task(1)        
     def myWallet(self):
+        '''
+        # 我的钱包》去审核 》审核 
+        '''  
         # 获取审核任务
         if self.loginUser["userType"] == 2:
             qushenhe_res = WoDeQianBao(self).quShenHe(self.header)
@@ -152,7 +159,7 @@ class WebsiteUser(HttpLocust):
     host = "http://192.168.1.30"
     # host = "http://dev.ytime365.com"
     users = queryUsers() #多个用户
-    print(queryUsers(),type(queryUsers()))
+    # users = [{'id': 10387, 'nickname': '', 'mobile': '15000001113'}] #单个用户
     queueData = queue.Queue()
     for userItem in users:
         queueData.put_nowait(userItem)   
