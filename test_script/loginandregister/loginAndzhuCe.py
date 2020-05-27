@@ -31,7 +31,6 @@ class LoginAndZhuCe(TaskSet):
         """
             注册
         """
-        print(6666666666666666666)
         self.ZhuCeMa()
         try:
             # mobile = self.locust.queueMobile.get()  #获取队列里的数据
@@ -72,6 +71,7 @@ class LoginAndZhuCe(TaskSet):
         register_res = json.loads(registerResponse.text)
         if 'code' in register_res and register_res["code"] == 200:
             print("注册手机号是：{}".format(mobile))
+            # self.logger.get_locust_Hook() #重点！此处挂载Log日志钩子
             registerResponse.success()
         elif 'code' in register_res and register_res["code"] == 438:
             print("手机号{}已存在".format(mobile))
