@@ -1,6 +1,9 @@
 from locust import HttpLocust,Locust, TaskSet, task, seq_task
-import sys,json,time,random
+import sys,json,time,random,os
 sys.path.append("F:/myTestFile/TestObject/YouTime")
+from Performance_Core.performance_log import loadLogger
+
+
 
 
 class PublicRequest(TaskSet):
@@ -15,7 +18,7 @@ class PublicRequest(TaskSet):
         with self.client.post(url,data = public_data,headers = header,name = urlName+url,verify = False,allow_redirects=False,catch_response=True) as response:
             # print("响应结果======{}".format(response.text))
             result = json.loads(response.text)
-            if "code" in result and result["code"] == 200 or result["code"] == "200":
+            if "code" in result and result["code"] == 200 or result["code"] == "200": #response.status_code == 200
                 time.sleep(random.randint(1,3))
                 response.success()
                 return result
