@@ -189,7 +189,7 @@ class WebsiteUser(HttpLocust):
  
     def teardown(self):
         print('locust teardown')
-        filename='F:/jenkins_workspace/workspace/youtime/report/example_requests.csv'
+        filename='F:/jenkins_workspace/workspace/youtime/example_requests.csv'
         with open(filename,'r')as f:
             read=csv.reader(f)
             for index,info in enumerate(read):
