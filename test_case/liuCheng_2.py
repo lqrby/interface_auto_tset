@@ -140,32 +140,54 @@ class LiuCheng(TaskSet):
 
     
     # @task(1)        
+    # def myWallet(self):
+    #     '''
+    #     # 我的钱包》去审核 》审核 
+    #     '''  
+    #     # 获取审核任务
+    #     if self.loginUser["userType"] == 2:
+    #         qushenhe_res = WoDeQianBao(self).quShenHe(self.header)
+    #         i = 1
+    #         while "code" in qushenhe_res and qushenhe_res["code"] == 468:
+    #             # 再次获取任务
+    #             qushenhe_res = WoDeQianBao(self).quShenHe(self.header)
+    #             if i>100:
+    #                 # self.interrupt()
+    #                 break
+    #             i += i
+    #         if 'code' in qushenhe_res and qushenhe_res["code"] == 200:
+    #             obj = qushenhe_res["data"]["reviewId"]
+    #             WoDeQianBao(self).shenHe(self.header,obj)
+    #         elif 'code' in qushenhe_res and qushenhe_res["code"] == 468:
+    #             print("丫的，获取任务一百次都没有任务")
+    #         else: 
+    #             print("xxx提交异常或审核超时xxx{}".format(qushenhe_res))
+    #     else:
+    #         print("----该用户没有审核权限---{}".format(self.loginUser))
+    #         self.interrupt()
+
+    @task(1)        
     def myWallet(self):
         '''
         # 我的钱包》去审核 》审核 
         '''  
         # 获取审核任务
         if self.loginUser["userType"] == 2:
-            qushenhe_res = WoDeQianBao(self).quShenHe(self.header)
             i = 1
-            while "code" in qushenhe_res and qushenhe_res["code"] == 468:
-                # 提交审核结果
+            while i<100:
+                # 获取审核任务
                 qushenhe_res = WoDeQianBao(self).quShenHe(self.header)
-                if i>100:
-                    # self.interrupt()
-                    break
+                if 'code' in qushenhe_res and qushenhe_res["code"] == 200:
+                    obj = qushenhe_res["data"]["reviewId"]
+                    WoDeQianBao(self).shenHe(self.header,obj)
+                    i = 1
+                elif 'code' in qushenhe_res and qushenhe_res["code"] == 468:
+                    print("丫的，用户{}获取不到任务{}次".format(self.loginUser,i))
+                else: 
+                    print("xxx{}提交异常或审核超时xxx{}".format(self.loginUser,qushenhe_res))
                 i += i
-            
-            if 'code' in qushenhe_res and qushenhe_res["code"] == 200:
-                obj = qushenhe_res["data"]["reviewId"]
-                WoDeQianBao(self).shenHe(self.header,obj)
-            elif 'code' in qushenhe_res and qushenhe_res["code"] == 468:
-                print("丫的，获取任务一百次都没有任务")
-            else: 
-                print("xxx提交异常或审核超时xxx{}".format(qushenhe_res))
-
         else:
-            print("----该用户没有审核权限---{}".format(self.loginUser))
+            print("{}----该用户没有审核权限".format(self.loginUser))
             self.interrupt()
             
 
@@ -174,8 +196,8 @@ class LiuCheng(TaskSet):
 class WebsiteUser(HttpLocust):
 
     task_set = LiuCheng
-    min_wait = 600
-    max_wait = 1000
+    min_wait = 1000
+    max_wait = 3000
     host = "http://192.168.1.30"
     # host = "http://dev.ytime365.com"
     users = queryUsers() #多个用户
@@ -194,11 +216,10 @@ class WebsiteUser(HttpLocust):
             read=csv.reader(f)
             for index,info in enumerate(read):
                 if index!=0:   #这里加判断
-                    print(info)   
                     if info[3:4] != ['0']:
                         os.system("F:/jenkins_workspace/workspace/youtime/report/sendemail.py")
 
 if __name__ == '__main__':
     import os
-    os.system("locust -f ./test_case/test_liuCheng_2.py --no-web --csv=example -c 100 -r 10 --run-time 2m")
+    os.system("locust -f ./test_case/liuCheng_2.py --no-web --csv=example -c 100 -r 10 --run-time 1m")
     

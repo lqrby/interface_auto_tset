@@ -24,6 +24,10 @@ class PublicDataClass(TaskSet):
     def zhuceUser(self,apikey,header):
         try:
             mobile = self.locust.queueData.get()  #获取队列里的数据
+            # print("****开始******")
+            # print(mobile)
+            # print("****结束******")
+            
         except queue.Empty:                     #队列取空后，直接退出
             print('no data exist')
             exit(0)
@@ -92,7 +96,7 @@ class PublicDataClass(TaskSet):
             exit(0)
         password = "defe12aad396f90e6b179c239de260d4" #
         device_tokens = "" #"AkWsVNSPMcwhC6nAXITHbPyrv0YgG5nt1T0B8n79-lrN"
-        login_data = {
+        self.login_data = {
             "password":password,
             "latitude":"39.905662",
             "mobile":str(mobile),
@@ -101,12 +105,12 @@ class PublicDataClass(TaskSet):
             "timestamp":str(int(time.time())),
             "sign":	"" 
         }
-        login_url = "v2/login/login-new"
-        sign = GetDataSign().sign_body(login_url,login_data, apikey)
-        login_data["sign"] = sign
+        login_url = "v2/login/login2"
+        sign = GetDataSign().sign_body(login_url,self.login_data, apikey)
+        self.login_data["sign"] = sign
         
         #登录
-        loginres = PublicRequest(self).requestMethod(login_url,login_data,header)
+        loginres = PublicRequest(self).requestMethod(login_url,self.login_data,header)
         print("登录===={}".format(loginres.elapsed.total_seconds()))
         loginresult = json.loads(loginres.text)
         if 'status' in loginresult and loginresult["status"] == 200 or 'status' in loginresult and loginresult["status"] == "200":
@@ -114,10 +118,50 @@ class PublicDataClass(TaskSet):
             login_res = loginresult["data"]
             loginres.success()
             return login_res
+        elif 'status' in loginresult and loginresult["status"] == 421:
+            loginres.success()
+            time.sleep(random.randint(1,3))
+            login_res = self.miBaoWenTi(apikey,header)
+            return login_res
         else:
-            print("报错url==={} ，参数==={} ，报错原因==={}".format(login_url,login_data,loginresult))
-            loginres.failure("报错url==={} ，参数==={} ，报错原因==={}".format(login_url,login_data,loginresult))
+            print("报错url==={} ，参数==={} ，报错原因==={}".format(login_url,self.login_data,loginresult))
+            loginres.failure("报错url==={} ，参数==={} ，报错原因==={}".format(login_url,self.login_data,loginresult))
         
+
+    
+    def miBaoWenTi(self,apikey,header):
+        """
+        # 登录设备发生改变，回答密保问题
+        """
+        daan_url = "v2/safe/answer"
+        daan_data ={
+            "password":self.login_data["password"],
+            "question":"1",
+            "answer":"北京",
+            "latitude":self.login_data["latitude"],
+            "mobile":self.login_data["mobile"],
+            "long":	self.login_data["long"],
+            "device_tokens":self.login_data["device_tokens"],
+            "timestamp":self.login_data["timestamp"],
+            "sign":	""
+        }
+
+        # 获取首页
+        daan_data["sign"] = GetDataSign().sign_body(daan_url,daan_data, apikey)
+        daan_respons = PublicRequest(self).requestMethod(daan_url,daan_data,header)
+        daanres = json.loads(daan_respons.text)
+        if 'status' in daanres and daanres["status"] == 200:
+            time.sleep(random.randint(1,3))
+            daan_respons.success()
+            return daanres["data"]
+        else:
+            print("报错url==={} ，参数==={} ，报错原因==={}".format(daan_url,daan_data,daanres))
+            daan_respons.failure("报错url==={} ，参数==={} ，报错原因==={}".format(daan_url,daan_data,daanres))
+
+
+
+
+
 
     # @task(1)
     def index(self,apikey,header,login_res):
@@ -202,9 +246,6 @@ class PublicDataClass(TaskSet):
                 if 'status' in smres and smres["status"] == 200 or 'status' in smres and smres["status"] == "200":
                     time.sleep(random.randint(1,3))
                     sm_respons.success()
-                    # print("Content-Type-1======{}".format(header['Content-Type']))
-                    # header['Content-Type'] = "application/x-www-form-urlencoded"
-                    # print("Content-Type-2======{}".format(header['Content-Type']))
                     return smres
                 else:
                     print("报错url==={} ，参数==={} ，报错原因==={}".format(shiming_url,m,smres))

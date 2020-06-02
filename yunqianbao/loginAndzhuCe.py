@@ -42,8 +42,9 @@ class LoginAndZhuCe(TaskSet):
 
 
 
-    # @task(1)   
-    def zhuCeUser(self,url,zc_data,header):
+    @task(1)   
+    def zhuCeUser(self):
+        print("进来啦！！！！！")
         PublicDataClass(self).zhuceUser(self.apikey,self.header)
 
 
@@ -64,5 +65,9 @@ class WebsiteUser(HttpLocust):
     for i in range(mobile["start"],mobile["end"]): #(15001200238,15001200239): #
         users.append(i)
     queueData = queue.Queue()
+    
     for userItem in users:
         queueData.put_nowait(userItem)   
+        # print("****用户开始******")
+        # print(queueData)
+        # print("****用户结束******")
