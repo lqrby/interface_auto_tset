@@ -6,7 +6,7 @@ import time
 import random,unittest,logging
 import queue
 import json,sys,xlrd,openpyxl,csv
-sys.path.append("F:/myTestFile/TestObject/YouTime")
+sys.path.append("F:/myTestFile/TestObject/TongChuangYuanMa")
 from Interface.QueryUsers import queryUsers
 from test_script.publicscript.publicFunction import PublicFunction
 from test_script.wode.woDeQianBao import WoDeQianBao
@@ -30,27 +30,33 @@ class LiuCheng(TaskSet):
         # lon = lonAndLat[1]
         # LoginAndZhuCe(self).userRegister() #注册
         self.loginUserData = LoginAndZhuCe(self).userLogin() 
-        self.loginUser = self.loginUserData["data"]
-        self.loginUser["location"]= {
-            "address": '北京市通州区', #fake.company(),
-            "lon": 116.63309759819349,
-            "lat": 39.90490152753389
-        }
-        self.header = self.loginUserData['header']
+        if self.loginUserData:
+            self.loginUser = self.loginUserData["data"]
+            self.loginUser["location"]= {
+                "address": '北京市通州区', #fake.company(),
+                "lon": 116.63309759819349,
+                "lat": 39.90490152753389
+            }
+            self.header = self.loginUserData['header']
+        else:
+            print("XXXXXXXXXX-----登录失败-----XXXXXXXX")
+            self.interrupt()
+
+        
     # def on_stop(self):
     #     print("运行结束")
     #     print(logging.getLogger('Success'))
     #     print("over*************************")
 
 
-    def setup(self):
-        print('task setup')
+    # def setup(self):
+    #     print('task setup')
  
-    def teardown(self):
-        print('task teardown')
+    # def teardown(self):
+    #     print('task teardown')
 
 
-    # @task(1) 
+    @task(1) 
     def guanZhu(self):
         """
         关注
@@ -81,7 +87,7 @@ class LiuCheng(TaskSet):
                 PublicFunction(self).dianZan(self.header, userdetail)
         
     
-    # @task(1)        
+    @task(1)        
     def fujindongtai(self):
         '''
         # 附近的动态列表》查看动态详情 》点赞 
@@ -99,15 +105,15 @@ class LiuCheng(TaskSet):
                 # 给动态点赞
                 PublicFunction(self).dianZan(self.header, userdtdetail)
                 # 发布动态
-                # HomePage(self).newDynamics(self.header)
+                HomePage(self).newDynamics(self.header)
 
     # @task(1)        
-    def fadongtai(self):
-        # 发布动态
-        HomePage(self).newDynamics(self.header)
+    # def fadongtai(self):
+    #     # 发布动态
+    #     HomePage(self).newDynamics(self.header)
 
     
-    # @task(1)        
+    @task(1)        
     def fujinjiaZhi(self):
         '''
         # 附近的价值列表》查看价值详情 》点赞 》发布价值
@@ -131,10 +137,10 @@ class LiuCheng(TaskSet):
             print("---不好意思没有数据---")
 
     # @task(1)        
-    def fujinjiaZhi2(self):
-        #发布价值
-        print("uid:{}".format(self.loginUser["uid"]))
-        HomePage(self).publishingValue(self.header,self.loginUser["uid"])
+    # def fujinjiaZhi2(self):
+    #     #发布价值
+    #     print("uid:{}".format(self.loginUser["uid"]))
+    #     HomePage(self).publishingValue(self.header,self.loginUser["uid"])
 
 
 
@@ -198,9 +204,9 @@ class WebsiteUser(HttpLocust):
     task_set = LiuCheng
     min_wait = 1000
     max_wait = 3000
-    host = "http://192.168.1.30"
+    host = "http://172.20.100.30"
     # host = "http://dev.ytime365.com"
-    users = queryUsers() #多个用户
+    users = queryUsers(35,100) #多个用户
     # users = [{'id': 10387, 'nickname': '', 'mobile': '15000001113'}] #单个用户
     queueData = queue.Queue()
     for userItem in users:

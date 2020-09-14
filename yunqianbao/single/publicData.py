@@ -4,83 +4,71 @@ import base64
 import sys
 import queue
 from requests_toolbelt import MultipartEncoder
-sys.path.append("F:/myTestFile/TestObject/YouTime")
+sys.path.append("F:/myTestFile/TestObject/TongChuangYuanMa")
 from yunqianbao.qianMing import GetDataSign
 from yunqianbao.publicRequestMethod import PublicRequest
 from common.writeAndReadText import WriteAndReadTextFile
 
 class PublicDataClass(TaskSet):
-
-    # def userMobile(self):
-    #     mobile = {
-    #         "start":"18810798300",
-    #         "end":"18810798400"
-    #     }
-    #     return mobile
-        
-
     
-    # @task
     def zhuceUser(self,apikey,header):
         try:
             mobile = self.locust.queueData.get()  #获取队列里的数据
-            # print("****开始******")
-            # print(mobile)
-            # print("****结束******")
-            
         except queue.Empty:                     #队列取空后，直接退出
             print('no data exist')
             exit(0)
+        devicetokens = int(round(time.time() * 1000)) #"AkWsVNSPMcwhC6nAXITHbPyrv0YgG5nt1T0B8n79-lrN"
         zc_data = {
-            "password":"defe12aad396f90e6b179c239de260d4",
+            # "password":"defe12aad396f90e6b179c239de260d4", #123456ab
+            "password":"c80d171b81624145618791d99107554a", #ren123456
             "latitude":"39.905662",
             "mobile":str(mobile),
             "long":"116.64063",
-            "device_tokens":"",
+            "device_tokens":str(devicetokens),
             "timestamp":str(int(time.time())),
             "sign":	"" 
         }
 
         zc_url = "v2/login/signup"
+        # print("URL=====执行了")
         sign = GetDataSign().sign_body(zc_url,zc_data, apikey)
         zc_data["sign"] = sign
-        # print("zc_data===={}".format(zc_data))
         zc_respons = PublicRequest(self).requestMethod(zc_url,zc_data,header)
-        print("注册===={}".format(zc_respons.elapsed.total_seconds()))
+        # print("注册===={}".format(zc_respons.elapsed.total_seconds()))
         zcres = json.loads(zc_respons.text)
-        print("zc_res===={}".format(zcres))
+        # print("zc_res===={}".format(zcres))
         if 'status' in zcres and zcres["status"] == 200 or zcres["status"] == "200":
-            time.sleep(random.randint(1,3))
+            # time.sleep(random.randint(15,20))
             zc_respons.success()
+            print("注册用户成功===={}".format(mobile))
             return zcres["data"]
         elif 'status' in zcres and zcres["status"] == 422 or zcres["status"] == "422":
             print("此手机号已注册==={}".format(str(mobile)))
-            zc_respons.success()
         else:
             print("报错url==={} ，参数==={} ，报错原因==={}".format(zc_url,zc_data,zcres))
             zc_respons.failure("报错url==={} ，参数==={} ，报错原因==={}".format(zc_url,zc_data,zcres))
 
 
     # @task
-    def userLogout(self,apikey,header,login_res):
-        logout_url = "v2/login/logout"
-        logout_data = {
-            "access_token":login_res["access_token"],
-            "timestamp":str(int(time.time())),
-            "sign":""
-        }
+    # def userLogout(self,apikey,header,login_res):
+    #     logout_url = "v2/login/logout"
+    #     logout_data = {
+    #         "access_token":login_res["access_token"],
+    #         "timestamp":str(int(time.time())),
+    #         "sign":""
+    #     }
         
-        sign = GetDataSign().sign_body(logout_url,logout_data, apikey)
-        logout_data["sign"] = sign
-        out_respons = PublicRequest(self).requestMethod(logout_url,logout_data,header)
-        outres = json.loads(out_respons.text)
-        if 'status' in outres and outres["status"] == 200 or outres["status"] == "200":
-            time.sleep(random.randint(1,3))
-            out_respons.success()
-            return outres
-        else:
-            print("报错url==={} ，参数==={} ，报错原因==={}".format(logout_url,logout_data,outres))
-            out_respons.failure("报错url==={} ，参数==={} ，报错原因==={}".format(logout_url,logout_data,outres))
+    #     sign = GetDataSign().sign_body(logout_url,logout_data, apikey)
+    #     logout_data["sign"] = sign
+    #     out_respons = PublicRequest(self).requestMethod(logout_url,logout_data,header)
+    #     outres = json.loads(out_respons.text)
+    #     if 'status' in outres and outres["status"] == 200 or outres["status"] == "200":
+    #         time.sleep(random.randint(1,3))
+    #         out_respons.success()
+    #         return outres
+    #     else:
+    #         print("报错url==={} ，参数==={} ，报错原因==={}".format(logout_url,logout_data,outres))
+    #         out_respons.failure("报错url==={} ，参数==={} ，报错原因==={}".format(logout_url,logout_data,outres))
 
 
     # @task
@@ -95,13 +83,13 @@ class PublicDataClass(TaskSet):
             print('no data exist')
             exit(0)
         password = "defe12aad396f90e6b179c239de260d4" #
-        device_tokens = "" #"AkWsVNSPMcwhC6nAXITHbPyrv0YgG5nt1T0B8n79-lrN"
+        device_tokens = int(round(time.time() * 1000)) #"AkWsVNSPMcwhC6nAXITHbPyrv0YgG5nt1T0B8n79-lrN"
         self.login_data = {
             "password":password,
             "latitude":"39.905662",
             "mobile":str(mobile),
             "long":"116.64063",
-            "device_tokens":device_tokens,
+            "device_tokens":str(device_tokens),
             "timestamp":str(int(time.time())),
             "sign":	"" 
         }

@@ -1,8 +1,8 @@
 
 def user_mobile():
     mobile = {
-        "start":18810798481,
-        "end":18810798581
+        "start":15000010200, #7766没有注册成功
+        "end":15000012001
     }
     return mobile
     

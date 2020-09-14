@@ -4,7 +4,7 @@ import base64
 import sys
 import queue
 from requests_toolbelt import MultipartEncoder
-sys.path.append("F:/myTestFile/TestObject/YouTime")
+sys.path.append("F:/myTestFile/TestObject/TongChuangYuanMa")
 from yunqianbao.qianMing import GetDataSign
 from yunqianbao.publicRequestMethod import PublicRequest
 from common.writeAndReadText import WriteAndReadTextFile
@@ -39,8 +39,8 @@ class YunQianBaoMan(TaskSet):
         """
         self.publicData = PublicDataClass(self)
         self.login_res = self.publicData.login(self.apikey,self.header)  #登录
-        is_safe = self.publicData.index(self.apikey,self.header,self.login_res)  #获取首页
-        self.publicData.setMiBao(self.apikey, self.header,self.login_res,is_safe) # 设置密保
+        # is_safe = self.publicData.index(self.apikey,self.header,self.login_res)  #获取首页
+        # self.publicData.setMiBao(self.apikey, self.header,self.login_res,is_safe) # 设置密保
         taskdata = self.publicData.getUserType(self.apikey,self.header,self.login_res) #查看实名状态/获取任务
         if taskdata["type"] == 5:
             print("{}用户状态==={}===已实名通过".format(self.login_res["mobile"],taskdata["type"]))

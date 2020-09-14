@@ -34,7 +34,6 @@ class LoginRuKou(TaskSet):
                         "User-Agent":"okhttp/2.7.5",
                         "Connection": "keep-alive",
                         "Accept-Encoding":"gzip",
-                        "Host":"192.168.1.30"
                     }
                     
                 else:

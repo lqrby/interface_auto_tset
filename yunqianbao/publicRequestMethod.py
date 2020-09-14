@@ -1,6 +1,6 @@
 from locust import HttpLocust,Locust, TaskSet, task, seq_task
 import sys
-sys.path.append("F:/myTestFile/TestObject/YouTime")
+sys.path.append("F:/myTestFile/TestObject/TongChuangYuanMa")
 from yunqianbao.qianMing import GetDataSign
 class PublicRequest(TaskSet):
 

@@ -34,7 +34,6 @@ class LoginRuKou(TaskSet):
                         "User-Agent":"okhttp/2.7.5",
                         "Connection": "keep-alive",
                         "Accept-Encoding":"gzip",
-                        "Host":"192.168.1.30"
                     }
                     
                 else:
@@ -156,11 +155,11 @@ class LoginRuKou(TaskSet):
 #     task_set = UserBehavior
 #     min_wait = 600
 #     max_wait = 1000
-#     host = "http://192.168.1.30/gateway"
+#     host = "http://172.20.100.30/gateway"
 
 # class WebsiteUser(HttpLocust):
 #     task_set = LoginRuKou
 #     min_wait = 600
 #     max_wait = 1000
-#     host = "http://192.168.1.30/gateway"
+#     host = "http://172.20.100.30/gateway"
     

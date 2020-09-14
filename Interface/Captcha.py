@@ -1,9 +1,12 @@
 import redis
 import re
 def returnCaptcha(token):
+    """
+    redis缓存数据库连接
+    """
 
     # 连接池
-    pool = redis.ConnectionPool(host="192.168.1.27", port=6379,password="time25@Cs.redis",max_connections=1024)
+    pool = redis.ConnectionPool(host="172.20.100.27", port=6379,password="time25@Cs.redis",max_connections=1024)
     conn = redis.Redis(connection_pool=pool)
     # print("666",conn.get("yt:users:sms:code:zc{}".format("token")))
     # token = "yk_0002cf7687daa0d62cd778e7aca7db41"
@@ -18,4 +21,3 @@ def returnCaptcha(token):
     return code
     
 
-# returnCaptcha(loginUser)

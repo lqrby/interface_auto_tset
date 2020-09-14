@@ -1,7 +1,7 @@
 from locust import HttpLocust,Locust, TaskSet, task
 import time,sys,json,random
 from faker import Faker
-sys.path.append("F:/myTestFile/TestObject/YouTime")
+sys.path.append("F:/myTestFile/TestObject/TongChuangYuanMa")
 from test_script.publicscript.publicRequestMethod import PublicRequest
 # 定义用户行为
 class PublicFunction(TaskSet):

@@ -1,6 +1,6 @@
 from locust import HttpLocust,Locust, TaskSet, task
 import sys
-sys.path.append("F:/myTestFile/TestObject/YouTime")
+sys.path.append("F:/myTestFile/TestObject/TongChuangYuanMa")
 from common.pictures import SelectPictures
 from test_script.souye.fuJinJiaZhi import FuJinJiaZhi
 import time

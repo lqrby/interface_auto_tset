@@ -1,9 +1,9 @@
 from locust import HttpLocust,Locust, TaskSet, task
-import time
+import time,random
 import queue
 from requests_toolbelt import MultipartEncoder
 import sys
-sys.path.append("F:/myTestFile/TestObject/YouTime")
+sys.path.append("F:/myTestFile/TestObject/TongChuangYuanMa")
 from yunqianbao.single.publicData import PublicDataClass
 from yunqianbao.single.userMobile import user_mobile
 
@@ -20,12 +20,12 @@ class LoginAndZhuCe(TaskSet):
             "app-version":"5.4.91",
             "mobile-type":"HUAWEIALP-TL00(8.0.0)",
             "mobile-system":"android8.0.0",
-            "device-tokens": "",  #AkWsVNSPMcwhC6nAXITHbPyrv0YgG5nt1T0B8n79-lrN
+            "device-tokens": str(int(round(time.time() * 1000))),  #AkWsVNSPMcwhC6nAXITHbPyrv0YgG5nt1T0B8n79-lrN
             "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 8.0.0; ALP-TL00 Build/HUAWEIALP-TL00)",
             "Content-Type":	"application/x-www-form-urlencoded",
         }
         self.apikey="djakdgkadgkafddadfjaddgbadsbfhbdashbgfadssfhbh"
-        self.sfz_path = "F:/myTestFile/TestObject/YouTime/yunqianbao/static/shenfenzheng.txt"
+        # self.sfz_path = "F:/myTestFile/TestObject/YouTime/yunqianbao/static/shenfenzheng.txt"
         # self.publicData = PublicDataClass(self)
         # self.login_res = self.publicData.login(self.apikey,self.header)  #登录
         # is_safe = self.publicData.index(self.apikey,self.header,self.login_res)  #获取首页
@@ -36,7 +36,6 @@ class LoginAndZhuCe(TaskSet):
         #     print("{}==需要去后台审核通过实名认证".format(self.login_res))
 
 
-    # @task(1)   
     def userlogin(self):
         PublicDataClass(self).login(self.apikey,self.header)
 
@@ -44,9 +43,12 @@ class LoginAndZhuCe(TaskSet):
 
     @task(1)   
     def zhuCeUser(self):
-        print("进来啦！！！！！")
+        self.header["mobile-unid"] = str(int(round(time.time() * 100000)))
+        self.header["device-tokens"] = str(int(round(time.time() * 1000)))
+        self.header["User-Agent"] = str(int(round(time.time() * 100000)))
+        self.header["mobile-type"] = str(int(round(time.time() * 1000)))
         PublicDataClass(self).zhuceUser(self.apikey,self.header)
-
+        # time.sleep(random.randint(1,2))
 
     
     
@@ -54,17 +56,18 @@ class LoginAndZhuCe(TaskSet):
 
 class WebsiteUser(HttpLocust):
     task_set = LoginAndZhuCe
-    min_wait = 600
-    max_wait = 1000
+    min_wait = 100
+    max_wait = 300
     host = "https://tyqbapi.bankft.com/"
     # host = "http://dev.api.bankft.com/"
     
     # users = queryUsers() #多个用户
     mobile = user_mobile()
     users = []
-    for i in range(mobile["start"],mobile["end"]): #(15001200238,15001200239): #
+    for i in range(mobile["start"],mobile["end"]): #(15001200500,15001200239): #
         users.append(i)
     queueData = queue.Queue()
+    # print("所有手机号====",queueData)
     
     for userItem in users:
         queueData.put_nowait(userItem)   

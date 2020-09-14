@@ -3,7 +3,7 @@ import json,sys,time,random
 import os
 import oss2
 from faker import Faker
-sys.path.append("F:/myTestFile/TestObject/YouTime")
+sys.path.append("F:/myTestFile/TestObject/TongChuangYuanMa")
 from test_script.publicscript.publicRequestMethod import PublicRequest
 from common.pictures import SelectPictures
 

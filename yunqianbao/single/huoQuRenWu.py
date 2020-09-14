@@ -6,7 +6,7 @@ import queue
 import ast
 # from requests_toolbelt import MultipartEncoder
 from requests_toolbelt import MultipartEncoder
-sys.path.append("F:/myTestFile/TestObject/YouTime")
+sys.path.append("F:/myTestFile/TestObject/TongChuangYuanMa")
 from yunqianbao.qianMing import GetDataSign
 from yunqianbao.publicRequestMethod import PublicRequest
 from common.writeAndReadText import WriteAndReadTextFile

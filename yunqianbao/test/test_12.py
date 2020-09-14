@@ -9,11 +9,13 @@ print('Waiting for connection...')
 
 while True:
     # 接受一个新连接:
-    
+    print("6666")
     sock,addr = s.accept()
+    print(88888)
     # 创建新线程来处理TCP连接:
     t = threading.Thread(target=tcplink, args=(sock, addr))
     t.start()
+    print("结束")
 def tcplink(sock, addr):
     print('Accept new connection from %s:%s...' % addr)
     sock.send(b'Welcome!')

@@ -3,7 +3,7 @@ import time
 import queue
 import json,sys
 import random
-sys.path.append("F:/myTestFile/TestObject/YouTime")
+sys.path.append("F:/myTestFile/TestObject/TongChuangYuanMa")
 from Interface.QueryUsers import queryUsers
 from test_script.loginandregister.loginAndzhuCe import LoginAndZhuCe
 
@@ -137,8 +137,7 @@ class WebsiteUser(HttpLocust):
     task_set = FaXiaoXi
     min_wait = 1000
     max_wait = 3000
-    host = "http://192.168.1.30"     
-    # host = "http://192.168.1.39:18095"     
+    host = "http://172.20.100.30"     
 
     users = queryUsers() #多个用户
     queueData = queue.Queue()

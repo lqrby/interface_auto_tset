@@ -3,7 +3,7 @@ import time,json,random
 import queue
 from requests_toolbelt import MultipartEncoder
 import sys
-sys.path.append("F:/myTestFile/TestObject/YouTime")
+sys.path.append("F:/myTestFile/TestObject/TongChuangYuanMa")
 from test_script.publicscript.publicRequestMethod import PublicRequest
 from Interface.Captcha import returnCaptcha
 
@@ -108,6 +108,7 @@ class LoginAndZhuCe(TaskSet):
                 "channel": 2
             }
         self.loginRes = PublicRequest(self).publicRequest(login_url, login_urlName, login_data, self.header)
+        print("-------------------------",self.loginRes)
         if self.loginRes:
             self.header["token"] = self.loginRes["data"]["token"]
             self.loginRes['header'] = self.header
@@ -196,13 +197,11 @@ class LoginAndZhuCe(TaskSet):
                 "User-Agent":"okhttp/2.7.5",
                 "Connection": "keep-alive",
                 "Accept-Encoding":"gzip"
-                # "Host":"192.168.1.30"
             }
             # zcm_response.success()
         else:
             print("XXX生成注册码失败XXX===={}".format(zcm_response.status_code))
             zcm_response.failure("XXX生成注册码失败XXX===={}".format(zcm_response.status_code))
-            
 
     
     

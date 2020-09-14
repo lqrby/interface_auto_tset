@@ -3,7 +3,7 @@
 # import random
 # import queue
 # import json,sys
-# sys.path.append("F:/myTestFile/TestObject/YouTime")
+# sys.path.append("F:/myTestFile/TestObject/TongChuangYuanMa")
 # from Interface.QueryUsers import queryUsers
 # from test_script.loginandregister.loginAndzhuCe import LoginAndZhuCe
 # # from test_script.souye.fuJinDeRen import FuJinDeRen
@@ -126,7 +126,7 @@
 #     task_set = SouYe
 #     min_wait = 600
 #     max_wait = 1000
-#     host = "http://192.168.1.30"
+#     host = "http://172.20.100.30"
 
 #     users = queryUsers() #多个用户
 #     queueData = queue.Queue()
