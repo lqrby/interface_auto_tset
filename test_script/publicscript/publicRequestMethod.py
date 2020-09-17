@@ -17,7 +17,7 @@ class PublicRequest(TaskSet):
         public_data = json.dumps(public_data)
         with self.client.post(url,data = public_data,headers = header,name = urlName+url,verify = False,allow_redirects=False,catch_response=True) as response:
             # print("响应结果======{}".format(response.text))
-            if "200" in response:
+            if "200" in str(response):
                 result = json.loads(response.text)
                 # if "code" in result and result["code"] == 200 or result["code"] == "200": #response.status_code == 200
                 time.sleep(random.randint(1,3))

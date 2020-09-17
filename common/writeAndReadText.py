@@ -32,10 +32,10 @@ class WriteAndReadTextFile():
         with open(path, 'r', encoding='utf-8') as f:
             lines = f.readlines()
             lines_list = list(lines)
-            line = lines_list[0]
-            lines_list.remove(lines[0])
-            f.close()
-            if lines_list:
+            if len(lines_list)>0:
+                line = lines_list[0]
+                lines_list.remove(lines[0])
+                f.close()
                 with open(path,"w",encoding="utf-8") as f_w:
                     s = "".join(lines_list)
                     f_w.write(s)

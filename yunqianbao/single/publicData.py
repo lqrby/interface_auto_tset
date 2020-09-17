@@ -30,15 +30,11 @@ class PublicDataClass(TaskSet):
         }
 
         zc_url = "v2/login/signup"
-        # print("URL=====执行了")
-        sign = GetDataSign().sign_body(zc_url,zc_data, apikey)
+        sign = GetDataSign().sign_body(zc_url,zc_data,apikey)
         zc_data["sign"] = sign
         zc_respons = PublicRequest(self).requestMethod(zc_url,zc_data,header)
-        # print("注册===={}".format(zc_respons.elapsed.total_seconds()))
         zcres = json.loads(zc_respons.text)
-        # print("zc_res===={}".format(zcres))
         if 'status' in zcres and zcres["status"] == 200 or zcres["status"] == "200":
-            # time.sleep(random.randint(15,20))
             zc_respons.success()
             print("注册用户成功===={}".format(mobile))
             return zcres["data"]
@@ -49,29 +45,19 @@ class PublicDataClass(TaskSet):
             zc_respons.failure("报错url==={} ，参数==={} ，报错原因==={}".format(zc_url,zc_data,zcres))
 
 
-    # @task
-    # def userLogout(self,apikey,header,login_res):
-    #     logout_url = "v2/login/logout"
-    #     logout_data = {
-    #         "access_token":login_res["access_token"],
-    #         "timestamp":str(int(time.time())),
-    #         "sign":""
-    #     }
-        
-    #     sign = GetDataSign().sign_body(logout_url,logout_data, apikey)
-    #     logout_data["sign"] = sign
-    #     out_respons = PublicRequest(self).requestMethod(logout_url,logout_data,header)
-    #     outres = json.loads(out_respons.text)
-    #     if 'status' in outres and outres["status"] == 200 or outres["status"] == "200":
-    #         time.sleep(random.randint(1,3))
-    #         out_respons.success()
-    #         return outres
-    #     else:
-    #         print("报错url==={} ，参数==={} ，报错原因==={}".format(logout_url,logout_data,outres))
-    #         out_respons.failure("报错url==={} ，参数==={} ，报错原因==={}".format(logout_url,logout_data,outres))
+    def userLogout(self,apikey,header,login_res):
+        logout_url = "v2/login/logout"
+        logout_urlName = "用户退出"
+        logout_data = {
+            "access_token":login_res["access_token"],
+            "timestamp":str(int(time.time())),
+            "sign":""
+        }
+        sign = GetDataSign().sign_body(logout_url,logout_data,apikey)
+        logout_data["sign"] = sign
+        return PublicRequest(self).publicRequest(logout_url,logout_urlName,logout_data,header)
 
 
-    # @task
     def login(self,apikey,header):
         """"
         登录》获取首页》判断密保(未设置密保先设置密保)》判断是否实名(未实名则先实名)
@@ -82,7 +68,7 @@ class PublicDataClass(TaskSet):
         except queue.Empty:                     #队列取空后，直接退出
             print('no data exist')
             exit(0)
-        password = "defe12aad396f90e6b179c239de260d4" #
+        password = "c80d171b81624145618791d99107554a" #
         device_tokens = int(round(time.time() * 1000)) #"AkWsVNSPMcwhC6nAXITHbPyrv0YgG5nt1T0B8n79-lrN"
         self.login_data = {
             "password":password,
@@ -111,6 +97,12 @@ class PublicDataClass(TaskSet):
             time.sleep(random.randint(1,3))
             login_res = self.miBaoWenTi(apikey,header)
             return login_res
+        elif 'status' in loginresult and loginresult["status"] == 412:
+            print("请打开应用权限")
+            loginres.failure("XXX{}---{}XXX===={}".format(str(mobile),password))   
+        elif 'status' in loginresult and loginresult["status"] == 1006:
+            print("用户名或密码错误")
+            loginres.failure("XXX{}---{}XXX===={}".format(str(mobile),password))    
         else:
             print("报错url==={} ，参数==={} ，报错原因==={}".format(login_url,self.login_data,loginresult))
             loginres.failure("报错url==={} ，参数==={} ，报错原因==={}".format(login_url,self.login_data,loginresult))
@@ -223,32 +215,29 @@ class PublicDataClass(TaskSet):
                 fields["sign"] = sign
                 m = MultipartEncoder(fields)
                 header['Content-Type'] = m.content_type
-                # header['Content-Type'] = m.content_type
-                sm_respons = PublicRequest(self).requestMethod(shiming_url,m,header)
-                print("Content-Type-1======{}".format(header['Content-Type']))
-
+                with self.client.post(shiming_url,data=m,headers=header,verify=False,allow_redirects=False,catch_response=True) as sm_respons:
+                    if "[200]" in str(sm_respons):
+                        smres = json.loads(sm_respons.text)
+                        if 'status' in smres and smres["status"] == 200 or 'status' in smres and smres["status"] == "200":
+                            time.sleep(random.randint(1,3))
+                            sm_respons.success()
+                            return smres
+                        else:
+                            print("报错url==={} ，参数==={} ，报错原因==={}".format(shiming_url,m,smres))
+                            sm_respons.failure("报错url==={} ，参数==={} ，报错原因==={}".format(shiming_url,m,sm_respons.text))
+                    else:
+                        print("XXXXX服务器报错XXXXX")
+                        sm_respons.failure("报错url==={} ，参数==={} ，报错原因==={}".format(shiming_url,m,sm_respons))
                 header['Content-Type'] = "application/x-www-form-urlencoded"
-
-                print("Content-Type-2======{}".format(header['Content-Type']))
-                smres = json.loads(sm_respons.text)
-                if 'status' in smres and smres["status"] == 200 or 'status' in smres and smres["status"] == "200":
-                    time.sleep(random.randint(1,3))
-                    sm_respons.success()
-                    return smres
-                else:
-                    print("报错url==={} ，参数==={} ，报错原因==={}".format(shiming_url,m,smres))
-                    sm_respons.failure("报错url==={} ，参数==={} ，报错原因==={}".format(shiming_url,m,smres))
             else:
                 print("XXX没有实名的身份证号了XXX")
                 # self.interrupt(reschedule=True)
-        else:
-            print("zhi shi====={}".format(login_res["info"]))
+        # else:
+        #     print("zhi shi====={}".format(login_res["info"]))
         
-    # @task(1)
     def getDangQiId(self,apikey,header,login_res):
         """"
         获取当期id
-        
         """
         dq_url = "v2/new-year20/online-period"
         dq_data = {
@@ -293,7 +282,6 @@ class PublicDataClass(TaskSet):
             jrhqy_respons.failure("报错url==={} ，参数==={} ，报错原因==={}".format(jrhqy_url,jrhqy_data,jrhqyres))
 
 
-    # @task(1)
     def getUserType(self,apikey,header,login_res):
         """"
         获取实名认证的状态
@@ -308,12 +296,29 @@ class PublicDataClass(TaskSet):
         sign = GetDataSign().sign_body(rw_url,renwu_data, apikey)
         renwu_data["sign"] = sign
         #进入获取任务页面请求
+        sfzpath = "F:/myTestFile/TestObject/TongChuangYuanMa/yunqianbao/static/shenfenzheng.txt"
         renwu_respons = PublicRequest(self).requestMethod(rw_url,renwu_data,header)
         zfrwres = json.loads(renwu_respons.text)
         if 'status' in zfrwres and zfrwres["status"] == 200 or zfrwres["status"] == "200":
             time.sleep(random.randint(1,3))
             renwu_respons.success()
-            return zfrwres["data"]
+            taskdata = zfrwres["data"]["type"]
+            if taskdata == 5:
+                # print("{}用户状态==={}===已实名通过".format(login_res["mobile"],taskdata))
+                return taskdata
+            elif taskdata == 3:
+                print("{}用户状态==={}===待审核".format(login_res["mobile"],taskdata))
+            elif taskdata == 1:
+                print("{}用户状态==={}===未实名,现在去提交审核资料".format(login_res["mobile"],taskdata))
+                self.shiMing(apikey,header,login_res,sfzpath) #实名认证
+                print("{}用户提交了审核资料".format(login_res["mobile"],taskdata))
+            elif taskdata == 2:
+                print("{}用户状态=={}==未实名,现在去提交审核资料".format(login_res["mobile"],taskdata))
+                self.shiMing(apikey,header,login_res,sfzpath) #实名认证
+            else:
+                print("{}用户状态=={}".format(login_res["mobile"],taskdata))
+
+                
         elif 'status' in zfrwres and zfrwres["status"] == 401 or zfrwres["status"] == "401":
             print("未登录或已退出")
             # self.interrupt(reschedule=True)
@@ -498,8 +503,12 @@ class PublicDataClass(TaskSet):
             print("报错url==={} ，参数==={} ，报错原因==={}".format(setzfmm_url,setzfmm_data,setzfmmres))
             setzfmm_respons.failure("报错url==={} ，参数==={} ，报错原因==={}".format(setzfmm_url,setzfmm_data,setzfmmres))
        
-       
-                    
+
+    
+
+
+    
+                 
         
 
     

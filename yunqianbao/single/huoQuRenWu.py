@@ -10,25 +10,26 @@ sys.path.append("F:/myTestFile/TestObject/TongChuangYuanMa")
 from yunqianbao.qianMing import GetDataSign
 from yunqianbao.publicRequestMethod import PublicRequest
 from common.writeAndReadText import WriteAndReadTextFile
+from common.userAgent import UserAgent
 
 class ComTasks(TaskSet):
-    # def on_start(self):
-    #     self.header ={
-    #         "Connection":"keep-alive",
-    #         "app-type":"android", #android
-    #         "mobile-unid":"866215038845168",
-    #         "app-version":"5.4.91",
-    #         "mobile-type":"HUAWEIALP-TL00(8.0.0)",
-    #         "mobile-system":"android8.0.0",
-    #         "device-tokens": "",  #AkWsVNSPMcwhC6nAXITHbPyrv0YgG5nt1T0B8n79-lrN
-    #         "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 8.0.0; ALP-TL00 Build/HUAWEIALP-TL00)",
-    #         "Content-Type":	"application/x-www-form-urlencoded",
-    #     }
-    #     self.apikey="djakdgkadgkafddadfjaddgbadsbfhbdashbgfadssfhbh"
-    #     self.sfz_path = "F:/myTestFile/TestObject/YouTime/yunqianbao/static/shenfenzheng.txt"
-    #     self.userData_path = "F:/myTestFile/TestObject/YouTime/yunqianbao/static/login.txt"
-    #     struser = WriteAndReadTextFile().readAll_txt(self.userData_path)
-    #     self.user_dict = ast.literal_eval(struser)
+    def on_start(self):
+        self.header ={
+            "Connection":"keep-alive",
+            "app-type":"android", #android
+            "mobile-unid":"866215038845168",
+            "app-version":"5.4.91",
+            "mobile-type":"HUAWEIALP-TL00(8.0.0)",
+            "mobile-system":"android8.0.0",
+            "device-tokens": "",  #AkWsVNSPMcwhC6nAXITHbPyrv0YgG5nt1T0B8n79-lrN
+            "User-Agent": random.choice(UserAgent().random_userAgent()),#"Dalvik/2.1.0 (Linux; U; Android 8.0.0; ALP-TL00 Build/HUAWEIALP-TL00)",
+            "Content-Type":	"application/x-www-form-urlencoded",
+        }
+        self.apikey="djakdgkadgkafddadfjaddgbadsbfhbdashbgfadssfhbh"
+        self.sfz_path = "F:/myTestFile/TestObject/YouTime/yunqianbao/static/shenfenzheng.txt"
+        self.userData_path = "F:/myTestFile/TestObject/YouTime/yunqianbao/static/login.txt"
+        struser = WriteAndReadTextFile().readAll_txt(self.userData_path)
+        self.user_dict = ast.literal_eval(struser)
     
     # @task
     # def main_entrance(self,user_dict,apikey,header):
@@ -83,18 +84,18 @@ class ComTasks(TaskSet):
 
 
     
-# class WebsiteUser(HttpLocust):
-#     task_set = ComTasks
-#     min_wait = 600
-#     max_wait = 1000
-#     host = "https://tyqbapi.bankft.com/"
-    # host = "http://dev.api.bankft.com/"
+class WebsiteUser(HttpLocust):
+    task_set = ComTasks
+    min_wait = 600
+    max_wait = 1000
+    host = "https://tyqbapi.bankft.com/"
+    host = "http://dev.api.bankft.com/"
     
-    # users = queryUsers() #多个用户
-    # users = []
-    # for i in range(18810798243,18810798244):
-    #     users.append(i)
-    # queueData = queue.Queue()
-    # for userItem in users:
-    #     queueData.put_nowait(userItem)   
+    users = queryUsers() #多个用户
+    users = []
+    for i in range(18810798243,18810798244):
+        users.append(i)
+    queueData = queue.Queue()
+    for userItem in users:
+        queueData.put_nowait(userItem)   
 

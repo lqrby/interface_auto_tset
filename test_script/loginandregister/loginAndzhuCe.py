@@ -67,22 +67,24 @@ class LoginAndZhuCe(TaskSet):
         timeout = 20   超时
         catch_response=True    自定义成功失败
         '''
-        registerResponse = PublicRequest(self).requestMethod(registerUrl,registerUrlName,registerData,self.header)  
-        register_res = json.loads(registerResponse.text)
-        if 'code' in register_res and register_res["code"] == 200:
-            print("注册手机号是：{}".format(mobile))
-            # self.logger.get_locust_Hook() #重点！此处挂载Log日志钩子
-            registerResponse.success()
-        elif 'code' in register_res and register_res["code"] == 438:
-            print("手机号{}已存在".format(mobile))
-            registerResponse.failure("手机号{}已存在".format(mobile))
-        elif 'code' in register_res and register_res["code"] == 437:
-            # print("验证码失效,请从新发送=====手机号是：{}短信验证码是------{}".format(mobile,code))
-            registerResponse.failure("验证码失效,请从新发送=====手机号是：{}".format(mobile))
-        else:
-            print("手机号{}注册失败{}".format(str(mobile),register_res))
-            registerResponse.failure("手机号{}注册失败{}".format(str(mobile),register_res))
-
+        with self.client.post(registerUrl,data=registerData,headers=self.header,name=registerUrlName+registerUrl,verify=False,allow_redirects=False,catch_response=True) as registerResponse:
+            if "200" in registerResponse:
+                register_res = json.loads(registerResponse.text)
+                if 'code' in register_res and register_res["code"] == 200:
+                    # print("注册手机号是：{}".format(mobile))
+                    # self.logger.get_locust_Hook() #重点！此处挂载Log日志钩子
+                    registerResponse.success()
+                elif 'code' in register_res and register_res["code"] == 438:
+                    print("手机号{}已存在".format(mobile))
+                    registerResponse.failure("手机号{}已存在".format(mobile))
+                elif 'code' in register_res and register_res["code"] == 437:
+                    # print("验证码失效,请从新发送=====手机号是：{}短信验证码是------{}".format(mobile,code))
+                    registerResponse.failure("验证码失效,请从新发送=====手机号是：{}".format(mobile))
+                else:
+                    print("手机号{}注册失败{}".format(str(mobile),register_res))
+                    registerResponse.failure("手机号{}注册失败{}".format(str(mobile),register_res))
+            else:
+                registerResponse.failure("手机号{}注册失败{}".format(str(mobile),registerResponse))
 
     # @task(1)   
     def userLogin(self):

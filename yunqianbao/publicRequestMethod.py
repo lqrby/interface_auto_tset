@@ -1,20 +1,30 @@
 from locust import HttpLocust,Locust, TaskSet, task, seq_task
-import sys
+import sys,json,time,random
 sys.path.append("F:/myTestFile/TestObject/TongChuangYuanMa")
 from yunqianbao.qianMing import GetDataSign
 class PublicRequest(TaskSet):
 
     def requestMethod(self,url,data,header):
-        with self.client.post(url, data = data, headers = header, verify = False, allow_redirects=False,catch_response=True) as response:
-                # result = json.loads(response.text)
-                # if 'status' in result and result["status"] == 200 or 'status' in result and result["status"] == "200":
-                #     time.sleep(random.randint(1,3))
-                #     response.success()
-            #推荐使用这种方式统计一个接口的响应时间，准确性更高
+        with self.client.post(url,data=data,headers=header,verify=False,allow_redirects=False,catch_response=True) as response:
             return response
-                # else:
-                #     print("报错url==={} ，参数==={} ，报错原因==={}".format(url,data,result))
-                #     response.failure("报错url==={} ，参数==={} ，报错原因==={}".format(url,data,result))
+
+
+    
+
+    def publicRequest(self,url,urlName,public_data,header):
+        # public_data = json.dumps(public_data)
+        with self.client.post(url,data = public_data,headers=header,name=urlName+url,verify=False,allow_redirects=False,catch_response=True) as response:
+            # print("响应结果======{}".format(response))
+            if "[200]" in str(response):
+                result = json.loads(response.text)
+                if 'status' in result and result["status"] == 200 or 'status' in result and result["status"] == "200":
+                    time.sleep(random.randint(1,3))
+                    response.success()
+                    return result
+            else:
+                print("报错url==={}-{} ，参数==={} ，报错原因==={}".format(urlName,url,public_data,response.text))
+                response.failure("报错url==={}-{} ，参数==={} ，报错原因==={}".format(urlName,url,public_data,response.text))
+    
                     
 
 
