@@ -3,6 +3,7 @@ import requests
 import time
 import matplotlib.pyplot as plt
 from fontTools.ttLib import TTFont
+from PIL import ImageGrab
 
 
 # str = """
@@ -107,5 +108,8 @@ y = [int(i) for i in re.findall(r'y="(.*?)" on=', str3)]
 print(x)
 print(y)
 plt.plot(x, y)
+plt.savefig(r"F:/myTestFile/TestObject/TongChuangYuanMa/txt_file/tp.png")
 plt.show()
 
+
+  

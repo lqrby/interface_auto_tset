@@ -10,13 +10,13 @@ from gevent._semaphore import Semaphore
 from yunqianbao.single.userMobile import user_mobile
 
 
-# all_locusts_spawned = Semaphore() #计数器
-# all_locusts_spawned.acquire() #计数器为0时阻塞线程 每当调用acquire()时，内置计数器-1
+all_locusts_spawned = Semaphore() #计数器
+all_locusts_spawned.acquire() #计数器为0时阻塞线程 每当调用acquire()时，内置计数器-1
 
-# def on_hatch_complete(**kwargs):
-#     all_locusts_spawned.release() #内置计数器+1
+def on_hatch_complete(**kwargs):
+    all_locusts_spawned.release() #内置计数器+1
 
-# events.hatch_complete += on_hatch_complete
+events.hatch_complete += on_hatch_complete
 
 class CXSCLiuCheng(TaskSet):
 
@@ -35,19 +35,22 @@ class CXSCLiuCheng(TaskSet):
         }
         self.loginRes = UserLogin(self).login(self.header)
         if self.loginRes:
-            print("self.loginRes===",self.loginRes)
+            # print("self.loginRes===",self.loginRes)
             self.token = self.loginRes['data']['token']
             print("登录成功----",self.loginRes)
             print("token----",self.token)
             self.cxscClassObj = ChuangXinShiChang(self)
-            # all_locusts_spawned.wait() #在此设置了集合点
+            
 
     @task
     def liuCheng(self):
+        all_locusts_spawned.wait() #在此设置了集合点
         if self.loginRes:
-            cxsc_list = self.cxscClassObj.cxsc_list(self.token,self.header)  #创新市场列表
-            if cxsc_list:
-                cxsc_detail = self.cxscClassObj.cxsc_detail(cxsc_list,self.token,self.header) #创新市场项目详情
+            # cxsc_list = self.cxscClassObj.cxsc_list(self.token,self.header)  #创新市场列表
+            # if cxsc_list:
+                # detailObj = random.choice(cxsc_list["data"]["list"])
+                objId = "b934b31641e58338da634a0fe45e1987"
+                cxsc_detail = self.cxscClassObj.cxsc_detail(objId,self.token,self.header) #创新市场项目详情
                 if cxsc_detail:
                     ququerenOBJ = self.cxscClassObj.quRenGou(cxsc_detail,self.token,self.header) #创新市场去认购
                     if ququerenOBJ:
