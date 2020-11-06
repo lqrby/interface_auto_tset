@@ -1,4 +1,4 @@
-from locust import HttpLocust,Locust, TaskSet, task
+from locust import HttpUser,User,TaskSet,task,between,events
 import time
 import queue
 import json,sys
@@ -133,12 +133,10 @@ class FaXiaoXi(TaskSet):
                 response.failure("XXX发送群消息失败XXX,{}".format(qzlb_res))
         
 
-class WebsiteUser(HttpLocust):
-    task_set = FaXiaoXi
-    min_wait = 1000
-    max_wait = 3000
+class WebsiteUser(HttpUser):
+    tasks = [FaXiaoXi]
+    wait_time = between(1, 3)
     host = "http://172.20.100.30"     
-
     users = queryUsers() #多个用户
     queueData = queue.Queue()
     for userItem in users:

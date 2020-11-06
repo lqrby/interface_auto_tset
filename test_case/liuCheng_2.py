@@ -1,7 +1,6 @@
 #-*- coding : utf-8 -*-
 # coding: utf-8
-
-from locust import HttpLocust,Locust, TaskSet, task
+from locust import HttpUser,User,TaskSet,task,between,events
 import time
 import random,unittest,logging
 import queue
@@ -20,7 +19,6 @@ from test_script.publicscript.publicFunction import PublicFunction
 from test_script.homePage import HomePage
 # from report.HTMLTestRunner import HTMLTestRunner
 from report.HTMLTestRunner3 import data_analyse
-from locust import events
 # 定义用户行为
 class LiuCheng(TaskSet):
     def on_start(self):
@@ -199,11 +197,10 @@ class LiuCheng(TaskSet):
 
         
 
-class WebsiteUser(HttpLocust):
+class WebsiteUser(HttpUser):
 
-    task_set = LiuCheng
-    min_wait = 1000
-    max_wait = 3000
+    tasks = [LiuCheng]
+    wait_time = between(1, 3)
     host = "http://172.20.100.30"
     # host = "http://dev.ytime365.com"
     users = queryUsers(35,100) #多个用户

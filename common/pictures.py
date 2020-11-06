@@ -1,4 +1,4 @@
-from locust import HttpLocust,Locust, TaskSet, task
+from locust import TaskSet
 import random
 class SelectPictures(TaskSet):
 

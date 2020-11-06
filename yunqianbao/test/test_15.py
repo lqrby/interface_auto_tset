@@ -1,7 +1,7 @@
 #-*- coding : utf-8 -*-
 # coding: utf-8
 
-from locust import HttpLocust,Locust, TaskSet, task
+from locust import HttpUser,task,TaskSet,between,events
 import time
 import random,unittest,logging
 import queue
@@ -75,31 +75,13 @@ class XunBaoLiuCheng(TaskSet):
                 soup = BeautifulSoup(response.text, 'html.parser')
                 pplist = soup.find('section', attrs={'class': 'key_items'})
                 print("=============",pplist)
-                # if "status" in rg and rg["status"] == 200:
-                #     response.success()
-                #     return rg
-                # else:
-                #     response.failure("报错url==={}-{} ，参数==={} ，报错原因==={}".format(rg_urlName,rg_url,rg_data,rg))
-
-
-    
-    
+          
     
 
-    
-
-    
-    
-
-    
-
-class WebsiteUser(HttpLocust):
-
-    task_set = XunBaoLiuCheng
-    min_wait = 1000
-    max_wait = 3000
+class WebsiteUser(HttpUser):
+    tasks = [XunBaoLiuCheng]
+    wait_time = between(1, 3)
     host = "https://www.xunbao518.com/"
-
     def setup(self):
         print('locust setup')
  

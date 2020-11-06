@@ -1,6 +1,5 @@
-from locust import HttpLocust,Locust, TaskSet, task
-import time,json,random,sys,queue
-from bs4 import BeautifulSoup
+
+import sys
 sys.path.append("F:/myTestFile/TestObject/TongChuangYuanMa")
 # from Interface.QueryUsers import queryUsers
 # from test_script.publicscript.publicRequestMethod import PublicRequest

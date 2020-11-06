@@ -1,4 +1,4 @@
-from locust import HttpLocust,Locust, TaskSet, task, seq_task
+from locust import HttpUser,task,TaskSet,between,events
 import random,time,json
 import base64
 import sys
@@ -62,12 +62,10 @@ class YunQianBaoMan(TaskSet):
 
 
 
-class WebsiteUser(HttpLocust):
-    task_set = YunQianBaoMan
-    min_wait = 1000
-    max_wait = 3000
+class WebsiteUser(HttpUser):
+    tasks = [YunQianBaoMan]
+    wait_time = between(1, 3)
     host = "https://tyqbapi.bankft.com/"
-    
     # users = queryUsers() #多个用户
     mobile = user_mobile()
     users = []

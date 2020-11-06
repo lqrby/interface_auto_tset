@@ -1,4 +1,4 @@
-from locust import HttpLocust,Locust, TaskSet, task, seq_task
+from locust import TaskSet
 import sys,json,time,random,os
 sys.path.append("F:/myTestFile/TestObject/TongChuangYuanMa")
 from Performance_Core.performance_log import loadLogger

@@ -1,8 +1,6 @@
 #-*- coding : utf-8 -*-
 # coding: utf-8
-
-
-from locust import HttpLocust,Locust, TaskSet, task
+from locust import HttpUser,task,TaskSet,between,events
 import time,queue,ast
 import random,unittest,logging
 import json,sys,xlrd,openpyxl,csv
@@ -75,11 +73,9 @@ class LiuCheng(TaskSet):
                 # return result
 
 
-class WebsiteUser(HttpLocust):
-    
-    task_set = LiuCheng
-    min_wait = 1000
-    max_wait = 3000
+class WebsiteUser(HttpUser):
+    tasks = [LiuCheng]
+    wait_time = between(1, 3)
     host = "https://maoyan.com"
     # host = "http://dev.ytime365.com"
     # users = queryUsers(35,100) #多个用户

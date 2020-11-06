@@ -1,9 +1,8 @@
 #-*- coding : utf-8 -*-
 # coding: utf-8
 
-
-from locust import HttpLocust,Locust, TaskSet, task
-import time,queue,ast,re,requests
+from locust import HttpUser,task,TaskSet,between,events
+import time,queue,ast
 import random,unittest,logging
 import json,sys,xlrd,openpyxl,csv
 sys.path.append("F:/myTestFile/TestObject/TongChuangYuanMa")
@@ -16,27 +15,29 @@ from common.pictures import SelectPictures
 from test_script.loginandregister.loginAndzhuCe import LoginAndZhuCe
 from test_script.publicscript.publicFunction import PublicFunction
 from test_script.homePage import HomePage
+# from report.HTMLTestRunner import HTMLTestRunner
 from report.HTMLTestRunner3 import data_analyse
 from locust import events
 from common.userAgent import UserAgent
 from fontTools.ttLib import TTFont
-from fontFaceDecode import FontFaceDecode
+
 # 定义用户行为
 class LiuCheng(TaskSet):
     def on_start(self):
         user_ggent = random.choice(UserAgent.random_userAgent())
-        self.header = {
-            "User-Agent": user_ggent,
-            "Referer":"https://maoyan.com/"
-        }
+        self.header = {"User-Agent": user_ggent}
         filePath = "F:/proxyList.txt"
         proxyArr = self.readText(filePath) #ip代理
         self.arrProxy = []
         for pro in proxyArr:
             self.arrProxy.append({"http":pro[0]+":"+pro[1]})
-        self.oldWoffPath = "F:/myTestFile/TestObject/TongChuangYuanMa/txt_file/file2.woff" 
-        self.newWoffPath = "F:/myTestFile/TestObject/TongChuangYuanMa/txt_file/file4.woff" 
-        self.newXmlName = "F:/myTestFile/TestObject/TongChuangYuanMa/txt_file/maoyan4.xml" 
+        # self.proxies = random.choice(arrProxy)
+        # print("self.proxies====",self.proxies)
+    # def setup(self):
+    #     print('task setup')
+ 
+    # def teardown(self):
+    #     print('task teardown')
     def readText(self,filePath):
         """
         读取txt文件内的数据
@@ -55,24 +56,16 @@ class LiuCheng(TaskSet):
         """
         sy_url = "/"
         header = {"User-Agent": random.choice(UserAgent.random_userAgent())}
-        # print("header=====",header)
+        print("header=====",header)
         with self.client.get(sy_url, headers = header, proxies = random.choice(self.arrProxy), verify = False,allow_redirects=False,catch_response=True) as response:
             # print("响应结果======{}".format(response.text))
+            print("111111")
+            
             if "正在热映" in response.text:
-                font_file_name = re.findall(r'//vfile.meituan.net/colorstone/(.*?).woff', response.text)[0]
-                url = 'http://vfile.meituan.net/colorstone/{}.woff'.format(font_file_name)
-                res = requests.get(url,headers = header)
-                with open(self.newWoffPath,'wb') as f:
-                    f.write(res.content)
-                    print("写入成功")
-                
-                dictList = FontFaceDecode(self.oldWoffPath,self.newWoffPath,self.newXmlName)
-                # font=TTFont(self.filename2)
-                # font.saveXML("F:/myTestFile/TestObject/TongChuangYuanMa/txt_file/file4.xml")
-                # newuniList=font.getGlyphOrder()[2:]
-                print("33333======",dictList)
-                
 
+                    print("9999999",response.text)
+            else:
+                print("33333",type(response),response)
             # result = json.loads(response.text)
             # print(result)
                 # # if "code" in result and result["code"] == 200 or result["code"] == "200": #response.status_code == 200
@@ -80,24 +73,10 @@ class LiuCheng(TaskSet):
                 # response.success()
                 # return result
 
-    def tff2price(para = ";",tmp_dic={},ttf_list = []):
-        """
-        #将爬取的字符映射为字典中的数字
-        """
-        tmp_return = ""
-        for j in para.split(";"):
-            if j != "":
-                ss = j.replace("&#","0")
-                for g in ttf_list:
-                    if (hex(g) == ss):
-                        tmp_return+=str(tmp_dic[g])
-        return tmp_return
 
-class WebsiteUser(HttpLocust):
-    
-    task_set = LiuCheng
-    min_wait = 1000
-    max_wait = 3000
+class WebsiteUser(HttpUser):
+    tasks = [LiuCheng]
+    wait_time = between(1, 3)
     host = "https://maoyan.com"
     # host = "http://dev.ytime365.com"
     # users = queryUsers(35,100) #多个用户

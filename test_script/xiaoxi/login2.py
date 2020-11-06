@@ -1,4 +1,4 @@
-from locust import HttpLocust,Locust, TaskSet, task
+from locust import TaskSet
 import time
 import json
 # 定义用户行为
@@ -143,23 +143,3 @@ class LoginRuKou(TaskSet):
     #             response.success()
     #         else:
     #             response.failure("附近列表 fail")
-
-
-    
-
-        
-    
-
-
-# class WebsiteUser(HttpLocust):
-#     task_set = UserBehavior
-#     min_wait = 600
-#     max_wait = 1000
-#     host = "http://172.20.100.30/gateway"
-
-# class WebsiteUser(HttpLocust):
-#     task_set = LoginRuKou
-#     min_wait = 600
-#     max_wait = 1000
-#     host = "http://172.20.100.30/gateway"
-    

@@ -1,4 +1,4 @@
-from locust import HttpLocust,Locust, TaskSet, task, seq_task
+from locust import HttpUser,task,TaskSet,between,events
 import random,time,json
 import base64
 import sys
@@ -11,6 +11,7 @@ from yunqianbao.qianMing import GetDataSign
 from yunqianbao.publicRequestMethod import PublicRequest
 from common.writeAndReadText import WriteAndReadTextFile
 from common.userAgent import UserAgent
+from yunqianbao.single.userMobile import user_mobile
 
 class ComTasks(TaskSet):
     def on_start(self):
@@ -84,14 +85,12 @@ class ComTasks(TaskSet):
 
 
     
-class WebsiteUser(HttpLocust):
-    task_set = ComTasks
-    min_wait = 600
-    max_wait = 1000
-    host = "https://tyqbapi.bankft.com/"
+class WebsiteUser(HttpUser):
+    tasks = [ComTasks]
+    wait_time = between(1, 3)
+    # host = "https://tyqbapi.bankft.com/"
     host = "http://dev.api.bankft.com/"
-    
-    users = queryUsers() #多个用户
+    users = user_mobile() #多个用户
     users = []
     for i in range(18810798243,18810798244):
         users.append(i)

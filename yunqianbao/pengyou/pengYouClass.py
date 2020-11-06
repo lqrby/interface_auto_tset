@@ -1,4 +1,4 @@
-from locust import HttpLocust,Locust, TaskSet, task, seq_task
+from locust import TaskSet
 import random,time,json
 import base64
 import sys
@@ -19,7 +19,7 @@ class PengYouClass(TaskSet):
         
         """
         try:
-            mobile = self.locust.queueData.get()  #获取队列里的数据
+            mobile = self.user.queueData.get()  #获取队列里的数据
         except queue.Empty:                     #队列取空后，直接退出
             print('no data exist')
             exit(0)
@@ -108,6 +108,30 @@ class PengYouClass(TaskSet):
         if infolist_respons:
             return infolist_respons["data"]
     
+    def hairRedEnvelopes(self,apikey,header,login_res,group_id):
+        """
+        发红包
+        """
+        hair_url = "/v2/gift/give"              
+        hair_urlName = "发红包"  
+        aics = random.randint(1,50)
+        hair_data = {
+            "access_token":login_res["access_token"],
+            "pay_pwd":"e10adc3949ba59abbe56e057f20f883e",
+            "group_id":group_id,
+            "aics":str(aics),
+            "title":"恭喜发财,大吉大利",
+            "nums":str(random.randint(1,aics)),
+            "timestamp":str(int(time.time())),
+            "sign":""
+        }
+        sign = GetDataSign().sign_body(hair_url,hair_data, apikey)
+        hair_data["sign"] = sign
+        hair_respons = PublicRequest(self).publicRequest(hair_url,hair_urlName,hair_data,header)
+        if hair_respons and hair_respons["status"] == 200:
+            print("发红包成功，红包id是：{}".format(hair_respons["data"]["gift_id"]))
+            return hair_respons["data"]["gift_id"]
+
     def robRedEnvelopes(self,apikey,header,login_res,gift_id):
         """
         抢红包

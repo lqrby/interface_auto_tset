@@ -1,4 +1,4 @@
-from locust import HttpLocust,Locust, TaskSet, task, seq_task
+from locust import HttpUser,task,TaskSet,between,events
 import random,time,json
 import base64
 import sys
@@ -70,26 +70,5 @@ class ComTasks(TaskSet):
         if not renwu_res:
             print("XXXXXXXXXXXXXX获取任务失败，您未实名或实名信息在审核中XXXXXXXXXXXXX{}".format(renwu_res))
         return renwu_res
-        # if renwu_res and renwu_res["totalTask"] > 0:
-        #     print("*******************************jin ru ren wu ************************")
-                
-    
-    
 
-
-    
-# class WebsiteUser(HttpLocust):
-#     task_set = ComTasks
-#     min_wait = 600
-#     max_wait = 1000
-#     host = "https://tyqbapi.bankft.com/"
-    # host = "http://dev.api.bankft.com/"
-    
-    # users = queryUsers() #多个用户
-    # users = []
-    # for i in range(18810798243,18810798244):
-    #     users.append(i)
-    # queueData = queue.Queue()
-    # for userItem in users:
-    #     queueData.put_nowait(userItem)   
 

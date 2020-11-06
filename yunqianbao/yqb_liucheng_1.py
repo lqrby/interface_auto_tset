@@ -1,4 +1,4 @@
-from locust import HttpLocust,Locust, TaskSet, task, seq_task
+from locust import HttpUser,task,TaskSet,between,events
 import random,time,json
 import base64
 import sys
@@ -11,6 +11,7 @@ from common.writeAndReadText import WriteAndReadTextFile
 from yunqianbao.single.huoQuRenWu import ComTasks
 from yunqianbao.single.publicData import PublicDataClass
 from yunqianbao.single.userMobile import user_mobile
+
 
 class YunQianBaoMan(TaskSet):
     def Setups(self):
@@ -36,43 +37,42 @@ class YunQianBaoMan(TaskSet):
         self.login_res = self.public_Data.login(self.apikey,self.header)  #登录
         
         
-    def on_logout(self):
-        self.public_Data.userLogout(self.apikey,self.header,self.login_res)
+    # def on_logout(self):
+    #     self.public_Data.userLogout(self.apikey,self.header,self.login_res)
         
 
     @task
     def huoqurenwu(self):
         is_safe = self.public_Data.index(self.apikey,self.header,self.login_res)  #获取首页
-        self.public_Data.setMiBao(self.apikey, self.header,self.login_res,is_safe) # 设置密保
-        taskdata = self.public_Data.getUserType(self.apikey,self.header,self.login_res) #获取用户实名状态
-        if taskdata["type"] == 3:
-            print("实名认证信息已提交====待审核===={}".format(self.login_res))
-        elif taskdata["type"] == 1:
-            self.public_Data.shiMing(self.apikey,self.header,self.login_res,self.sfz_path) #实名认证
-        else:
-            pass
-        taskdata = self.public_Data.getUserType(self.apikey,self.header,self.login_res) #查询用户实名状态
-        if taskdata and taskdata["type"] == 5:
-            dqres = self.public_Data.getDangQiId(self.apikey,self.header,self.login_res) #获取当期id
-            self.public_Data.comTask(self.apikey,self.header,self.login_res,dqres["periodId"]) #进入获取任务页
-            self.public_Data.getUserType(self.apikey,self.header,self.login_res) #实名状态
-            queryRes = self.public_Data.queryPaymentPassword(self.apikey,self.header,self.login_res) #查询用户是否设置了交易密码
-            if not queryRes["paypwd_set"]:
-                self.public_Data.setPaymentPassword(self.apikey,self.header,self.login_res) #设置支付密码
-            money = self.public_Data.selectGoldShares(self.apikey,self.header,self.login_res) #查询账户余额
-            if money:
-                self.public_Data.paymentTaskMoney(self.apikey,self.header,self.login_res) #支付任务押金
+        if is_safe:
+            self.public_Data.setMiBao(self.apikey, self.header,self.login_res,is_safe) # 设置密保
+        # taskdata = self.public_Data.getUserType(self.apikey,self.header,self.login_res) #获取用户实名状态
+        # if taskdata["type"] == 3:
+        #     print("实名认证信息已提交====待审核===={}".format(self.login_res))
+        # elif taskdata["type"] == 1:
+        #     self.public_Data.shiMing(self.apikey,self.header,self.login_res,self.sfz_path) #实名认证
+        # else:
+        #     pass
+        # taskdata = self.public_Data.getUserType(self.apikey,self.header,self.login_res) #查询用户实名状态
+        # if taskdata and taskdata["type"] == 5:
+        #     dqres = self.public_Data.getDangQiId(self.apikey,self.header,self.login_res) #获取当期id
+        #     self.public_Data.comTask(self.apikey,self.header,self.login_res,dqres["periodId"]) #进入获取任务页
+        #     self.public_Data.getUserType(self.apikey,self.header,self.login_res) #实名状态
+        #     queryRes = self.public_Data.queryPaymentPassword(self.apikey,self.header,self.login_res) #查询用户是否设置了交易密码
+        #     if not queryRes["paypwd_set"]:
+        #         self.public_Data.setPaymentPassword(self.apikey,self.header,self.login_res) #设置支付密码
+        #     money = self.public_Data.selectGoldShares(self.apikey,self.header,self.login_res) #查询账户余额
+        #     if money:
+        #         self.public_Data.paymentTaskMoney(self.apikey,self.header,self.login_res) #支付任务押金
                 
         
 
 
     
-class WebsiteUser(HttpLocust):
-    task_set = YunQianBaoMan
-    min_wait = 500
-    max_wait = 1000
-    host = "https://tyqbapi.bankft.com/"
-    # host = "http://dev.api.bankft.com/"
+class WebsiteUser(HttpUser):
+    tasks = [YunQianBaoMan]
+    wait_time = between(1, 3)
+    host = "https://tyqbapi.pmm2020.com/"
     
     # users = queryUsers() #多个用户
     mobile = user_mobile()

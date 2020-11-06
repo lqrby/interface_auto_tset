@@ -1,19 +1,29 @@
-class Student(object):
+from gevent._semaphore import Semaphore
+from locust import TaskSet,HttpUser,events,task
+# from lxml import etree
 
-    @property
-    def score(self):
-        return self._score
+all_locusts_spawned = Semaphore()
+all_locusts_spawned.acquire()
+def on_spawning_complete(**kwargs):
+    return all_locusts_spawned.release() # 创建钩子方法
+events.spawning_complete += on_spawning_complete # 挂载到locust钩子函数（所有的Locust实例产生完成时触发）
 
-    @score.setter
-    def score(self, value):
-        if not isinstance(value, int):
-            raise ValueError('score must be an integer!')
-        if value < 0 or value > 100:
-            raise ValueError('score must between 0 ~ 100!')
-        self._score = value
+class UserBehavior(TaskSet):
+    def on_start(self):
+        """ on_start is called when a Locust start before any task is scheduled """
+        
+        self.login()
+        
 
-if __name__ == "__main__":
-    s = Student()
-    s.score = 600 # OK，实际转化为s.set_score(60)
-    s.score # OK，实际转化为s.get_score()
-    print(s.score)
+    
+    @task
+    def login(self):
+        all_locusts_spawned.wait() # 限制在所有用户准备完成前处于等待状态
+        html = self.client.get('/').text
+        print("cheng gong ==",html)
+
+class WebsiteUser(HttpUser):
+    host = 'https://www.baidu.com'
+    tasks = [UserBehavior ]
+    min_wait = 1000
+    max_wait = 3000

@@ -1,4 +1,4 @@
-from locust import HttpLocust,Locust, TaskSet, task
+from locust import TaskSet
 import time,json,random
 import queue
 from requests_toolbelt import MultipartEncoder
@@ -93,7 +93,7 @@ class LoginAndZhuCe(TaskSet):
         """
         self.ZhuCeMa()
         try:
-            userItem = self.locust.queueData.get()  #获取队列里的数据
+            userItem = self.user.queueData.get()  #获取队列里的数据
             # print("登录用户：",userItem)
         except queue.Empty:                     #队列取空后，直接退出
             print('no data exist')

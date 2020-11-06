@@ -1,4 +1,4 @@
-from locust import HttpLocust,Locust, TaskSet, task
+from locust import HttpUser,task,TaskSet,between,events
 import time,json,random,sys,queue
 from bs4 import BeautifulSoup
 sys.path.append("F:/myTestFile/TestObject/TongChuangYuanMa")
@@ -29,30 +29,19 @@ class CXSCLiuCheng(TaskSet):
         filepath = "C:/Users/renbaoyu/Desktop/8.21录单.xlsx"
         excelList = TiHuoJiLU(self).readExcel(filepath) #获取excel
         odergroup = TiHuoJiLU(self).merge_dict(excelList)  #对表格数据分组
-        # print("111111111111111111111111111=================",odergroup)
         odergroup2 = odergroup[:]
         for i,oder in enumerate(odergroup2): #遍历分组后的订单列表
-            # print("+++++++++++++++++++++++++++++++++++++++",i,oder)
-            # print("oder[0]====================",oder[0])
             mobile = oder[0]["收件人手机"]
-            # print("mobil=======",int(mobile))
-            # print(len(oder))
             for j in arrobject:
                 queryoder = TiHuoJiLU(self).queryOderAndLuRu(int(mobile),j,self.header) #查询订单
                 if queryoder:  #有待发货的订单
                     soup = BeautifulSoup(queryoder, 'html.parser')
                     tbody = soup.find('tbody')
                     all_tr = tbody.find_all('tr')
-                    print("有订单=========================666",mobile)
-                    # print("all_tr=====",all_tr)
                     for tr in all_tr:
-                        # print("tr============",tr)
-                        print("1111111111111")
                         if "待发货" in str(tr):
-                            print("可以去发货-------------------------------------")
                             qfhobj = TiHuoJiLU(self).quFaHuo(tr,self.header) #去发货,
                             if qfhobj:
-                                print("我要发货了==========666666666")
                                 try:
                                     jg = TiHuoJiLU(self).faHuo(qfhobj,self.header,oder) #携带oder对象是为了获取订单号总数
                                     if jg:
@@ -77,11 +66,9 @@ class CXSCLiuCheng(TaskSet):
         
 
 
-class WebsiteUser(HttpLocust):
-
-    task_set = CXSCLiuCheng
-    min_wait = 1000
-    max_wait = 3000
+class WebsiteUser(HttpUser):
+    tasks = [CXSCLiuCheng]
+    wait_time = between(1, 3)
     host = "https://admin.518.518aic.com"
     # users = queryUsers(35,100) #多个用户
     # print(users)

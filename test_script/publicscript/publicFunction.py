@@ -1,4 +1,4 @@
-from locust import HttpLocust,Locust, TaskSet, task
+from locust import TaskSet
 import time,sys,json,random
 from faker import Faker
 sys.path.append("F:/myTestFile/TestObject/TongChuangYuanMa")

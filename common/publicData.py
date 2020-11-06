@@ -1,4 +1,4 @@
-from locust import HttpLocust,Locust, TaskSet, task
+from locust import TaskSet
 import sys
 sys.path.append("F:/myTestFile/TestObject/TongChuangYuanMa")
 from common.pictures import SelectPictures

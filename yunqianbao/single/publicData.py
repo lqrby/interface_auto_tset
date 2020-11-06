@@ -1,4 +1,4 @@
-from locust import HttpLocust,Locust, TaskSet, task, seq_task
+from locust import TaskSet
 import random,time,json
 import base64
 import sys
@@ -13,7 +13,7 @@ class PublicDataClass(TaskSet):
     
     def zhuceUser(self,apikey,header):
         try:
-            mobile = self.locust.queueData.get()  #获取队列里的数据
+            mobile = self.user.queueData.get()  #获取队列里的数据
         except queue.Empty:                     #队列取空后，直接退出
             print('no data exist')
             exit(0)
@@ -64,23 +64,24 @@ class PublicDataClass(TaskSet):
         
         """
         try:
-            mobile = self.locust.queueData.get()  #获取队列里的数据
+            mobile = self.user.queueData.get()  #获取队列里的数据
         except queue.Empty:                     #队列取空后，直接退出
             print('no data exist')
             exit(0)
         password = "c80d171b81624145618791d99107554a" #
         device_tokens = int(round(time.time() * 1000)) #"AkWsVNSPMcwhC6nAXITHbPyrv0YgG5nt1T0B8n79-lrN"
         self.login_data = {
-            "password":password,
+            "password":"c80d171b81624145618791d99107554a",
             "latitude":"39.905662",
-            "mobile":str(mobile),
+            "mobile":"18810798467",
             "long":"116.64063",
-            "device_tokens":str(device_tokens),
+            "device_tokens":"",
             "timestamp":str(int(time.time())),
             "sign":	"" 
         }
         login_url = "v2/login/login2"
         sign = GetDataSign().sign_body(login_url,self.login_data, apikey)
+        print("sign====",sign)
         self.login_data["sign"] = sign
         
         #登录
@@ -92,8 +93,8 @@ class PublicDataClass(TaskSet):
             login_res = loginresult["data"]
             loginres.success()
             return login_res
-        elif 'status' in loginresult and loginresult["status"] == 421:
-            loginres.success()
+        elif 'status' in loginresult and loginresult["status"] == 421: #登录设备发生改变
+            # loginres.success()
             time.sleep(random.randint(1,3))
             login_res = self.miBaoWenTi(apikey,header)
             return login_res
@@ -153,7 +154,6 @@ class PublicDataClass(TaskSet):
                 "sign":"",
                 "timestamp":str(int(time.time()))
             }
-
             # 获取首页
             index_data["sign"] = GetDataSign().sign_body(index_url,index_data, apikey)
             sy_respons = PublicRequest(self).requestMethod(index_url,index_data,header)
@@ -170,6 +170,7 @@ class PublicDataClass(TaskSet):
    
     def setMiBao(self,apikey,header,login_res,is_safe):
         # 设置密保
+        print("is_safe[data]==={}".format(is_safe))
         if is_safe["data"]["is_safe"] == "0":
             mibao_url = "v2/safe/set-safe-issue"
             mibao_data = {
@@ -502,36 +503,3 @@ class PublicDataClass(TaskSet):
         else:
             print("报错url==={} ，参数==={} ，报错原因==={}".format(setzfmm_url,setzfmm_data,setzfmmres))
             setzfmm_respons.failure("报错url==={} ，参数==={} ，报错原因==={}".format(setzfmm_url,setzfmm_data,setzfmmres))
-       
-
-    
-
-
-    
-                 
-        
-
-    
-
-
-                
-    
-    
-
-
-    
-# class WebsiteUser(HttpLocust):
-#     task_set = YunQianBaoMan
-#     min_wait = 600
-#     max_wait = 1000
-#     host = "https://tyqbapi.bankft.com/"
-#     # host = "http://dev.api.bankft.com/"
-    
-#     # users = queryUsers() #多个用户
-#     users = []
-#     for i in range(18810798251,18810798252):
-#         users.append(i)
-#     queueData = queue.Queue()
-#     for userItem in users:
-#         queueData.put_nowait(userItem)   
-

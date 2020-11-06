@@ -1,4 +1,4 @@
-from locust import HttpLocust,Locust, TaskSet, task
+from locust import TaskSet
 import time,json,random,sys,queue,re
 import openpyxl,xlrd
 from bs4 import BeautifulSoup

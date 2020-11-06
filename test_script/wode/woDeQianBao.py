@@ -1,4 +1,4 @@
-from locust import HttpLocust,Locust, TaskSet, task
+from locust import TaskSet
 import time,json,random,sys
 sys.path.append("F:/myTestFile/TestObject/TongChuangYuanMa")
 from test_script.publicscript.publicRequestMethod import PublicRequest

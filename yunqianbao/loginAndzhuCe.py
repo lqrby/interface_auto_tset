@@ -1,4 +1,4 @@
-from locust import HttpLocust,Locust, TaskSet, task
+from locust import HttpUser,task,TaskSet,between,events
 import time,random
 import queue
 from requests_toolbelt import MultipartEncoder
@@ -54,10 +54,9 @@ class LoginAndZhuCe(TaskSet):
     
 
 
-class WebsiteUser(HttpLocust):
-    task_set = LoginAndZhuCe
-    min_wait = 100
-    max_wait = 300
+class WebsiteUser(HttpUser):
+    tasks = [LoginAndZhuCe]
+    wait_time = between(1, 3)
     host = "https://tyqbapi.bankft.com/"
     # host = "http://dev.api.bankft.com/"
     

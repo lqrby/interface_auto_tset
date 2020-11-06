@@ -1,6 +1,5 @@
-from locust import HttpLocust,Locust, TaskSet, task, events
+from locust import HttpUser,task,TaskSet,between,events
 import time,json,random,sys,queue
-
 sys.path.append("F:/myTestFile/TestObject/TongChuangYuanMa")
 from Interface.QueryUsers import queryUsers_ykf
 from test_script.publicscript.publicRequestMethod import PublicRequest
@@ -8,19 +7,15 @@ from yunkufang.ykf_login import UserLogin
 from yunkufang.chuangXinShiChang import ChuangXinShiChang
 from gevent._semaphore import Semaphore
 from yunqianbao.single.userMobile import user_mobile
-
-
 all_locusts_spawned = Semaphore() #计数器
 all_locusts_spawned.acquire() #计数器为0时阻塞线程 每当调用acquire()时，内置计数器-1
-
 def on_hatch_complete(**kwargs):
     all_locusts_spawned.release() #内置计数器+1
-
-events.hatch_complete += on_hatch_complete
+    print(all_locusts_spawned.release())
+# events.hatch_complete += on_hatch_complete
+# events.spawning_complete() += on_hatch_complete
 
 class CXSCLiuCheng(TaskSet):
-
-   
     def on_start(self):
         self.header = {
             "User-Agent":"Mozilla/5.0 (Linux; U; Android 8.0.0; zh-cn; ALP-TL00 Build/LRX22G) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Mobile Safari/537.36 YunKuFang/1.3.3",
@@ -37,8 +32,8 @@ class CXSCLiuCheng(TaskSet):
         if self.loginRes:
             # print("self.loginRes===",self.loginRes)
             self.token = self.loginRes['data']['token']
-            print("登录成功----",self.loginRes)
-            print("token----",self.token)
+            # print("登录成功----",self.loginRes)
+            # print("token----",self.token)
             self.cxscClassObj = ChuangXinShiChang(self)
             
 
@@ -46,10 +41,11 @@ class CXSCLiuCheng(TaskSet):
     def liuCheng(self):
         all_locusts_spawned.wait() #在此设置了集合点
         if self.loginRes:
-            # cxsc_list = self.cxscClassObj.cxsc_list(self.token,self.header)  #创新市场列表
-            # if cxsc_list:
-                # detailObj = random.choice(cxsc_list["data"]["list"])
-                objId = "b934b31641e58338da634a0fe45e1987"
+            cxsc_list = self.cxscClassObj.cxsc_list(self.token,self.header)  #创新市场列表
+            if cxsc_list:
+                detailObj = random.choice(cxsc_list["data"]["list"])
+                objId = detailObj["id"]
+                # objId = "b934b31641e58338da634a0fe45e1987"
                 cxsc_detail = self.cxscClassObj.cxsc_detail(objId,self.token,self.header) #创新市场项目详情
                 if cxsc_detail:
                     ququerenOBJ = self.cxscClassObj.quRenGou(cxsc_detail,self.token,self.header) #创新市场去认购
@@ -66,12 +62,9 @@ class CXSCLiuCheng(TaskSet):
     
 
 
-class WebsiteUser(HttpLocust):
-
-    task_set = CXSCLiuCheng
-    min_wait = 1000
-    max_wait = 3000
-    
+class WebsiteUser(HttpUser):
+    tasks = [CXSCLiuCheng]
+    wait_time = between(1, 3)
     host = "None"
     # print(host)
     # users = queryUsers_ykf(0,20) #多个用户

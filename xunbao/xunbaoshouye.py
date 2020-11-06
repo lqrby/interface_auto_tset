@@ -1,7 +1,7 @@
 #-*- coding : utf-8 -*-
 # coding: utf-8
 
-from locust import HttpLocust,Locust, TaskSet, task
+from locust import TaskSet
 import time
 import random,unittest,logging
 import queue

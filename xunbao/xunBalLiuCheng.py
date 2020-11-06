@@ -1,7 +1,6 @@
 #-*- coding : utf-8 -*-
 # coding: utf-8
-
-from locust import HttpLocust,Locust, TaskSet, task
+from locust import HttpUser,task,TaskSet,between,events
 import time,ast
 import random,unittest,logging
 import queue
@@ -110,11 +109,9 @@ class XunBaoLiuCheng(TaskSet):
 
     
 
-class WebsiteUser(HttpLocust):
-
-    task_set = XunBaoLiuCheng
-    min_wait = 1000
-    max_wait = 3000
+class WebsiteUser(HttpUser):
+    tasks = [XunBaoLiuCheng]
+    wait_time = between(1, 3)
     host = "https://www.xunbao518.com/"
 
     # def setup(self):

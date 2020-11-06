@@ -1,4 +1,4 @@
-from locust import HttpLocust,Locust, TaskSet, task
+from locust import HttpUser,task,TaskSet,between,events
 import time,json,random,sys,queue,ast
 from bs4 import BeautifulSoup
 sys.path.append("F:/myTestFile/TestObject/TongChuangYuanMa")
@@ -69,10 +69,8 @@ class CXSCLiuCheng(TaskSet):
 
                                 
 
-class WebsiteUser(HttpLocust):
-
-    task_set = CXSCLiuCheng
-    min_wait = 100
-    max_wait = 300
+class WebsiteUser(HttpUser):
+    tasks = [CXSCLiuCheng]
+    wait_time = between(1, 3)
     host = "https://admin.518.518aic.com"
     

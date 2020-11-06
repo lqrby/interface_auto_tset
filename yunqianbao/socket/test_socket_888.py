@@ -52,9 +52,6 @@ class UserBehavior(TaskSet):
                                         response_length=0)
  
 class ApiUser(WebSocketLocust):
- 
-    min_wait = 1000
-    max_wait = 3000
- 
-    task_set = UserBehavior
-# 　　5.注：ws要作为self的一个对象来定义，这样可以防止之后的task出现找不到ws的情况。
+    tasks = [UserBehavior]
+    wait_time = between(1, 3)
+    host = ""

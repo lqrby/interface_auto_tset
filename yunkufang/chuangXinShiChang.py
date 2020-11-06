@@ -1,5 +1,5 @@
-from locust import HttpLocust,Locust, TaskSet, task
-import time,json,random,sys,queue
+from locust import TaskSet
+import time,json,random,sys
 sys.path.append("F:/myTestFile/TestObject/TongChuangYuanMa")
 from Interface.QueryUsers import queryUsers
 from test_script.publicscript.publicRequestMethod import PublicRequest
@@ -50,13 +50,15 @@ class ChuangXinShiChang(TaskSet):
             "token":token
         }
         with self.client.post(detail_url,data = detail_data, headers = header,name = detail_urlName+detail_url,verify = False,allow_redirects=False,catch_response=True) as response:
-            detail = json.loads(response.text)
-            if "status" in detail and detail["status"] == 200:
-                response.success()
-                return detail
+            if "200" in str(response):
+                detail = json.loads(response.text)
+                if "status" in detail and detail["status"] == 200:
+                    response.success()
+                    return detail
+                else:
+                    response.failure("报错url==={}-{} ，参数==={} ，报错原因==={}".format(detail_urlName,detail_url,detail_data,detail))
             else:
-                response.failure("报错url==={}-{} ，参数==={} ，报错原因==={}".format(detail_urlName,detail_url,detail_data,detail))
-
+                response.failure("服务器响应错误==={}=={}".format(response,response.text))
 
     # @task
     def quRenGou(self,detaill_obj,token,header):
@@ -74,12 +76,15 @@ class ChuangXinShiChang(TaskSet):
                 "token":token
             }
             with self.client.post(qrg_url,data = qrg_data, headers = header,name = qrg_urlName+qrg_url,verify = False,allow_redirects=False,catch_response=True) as response:
-                    qrg = json.loads(response.text)
-                    if "status" in qrg and qrg["status"] == 200:
-                        response.success()
-                        return qrg
+                    if "200" in str(response):
+                        qrg = json.loads(response.text)
+                        if "status" in qrg and qrg["status"] == 200:
+                            response.success()
+                            return qrg
+                        else:
+                            response.failure("报错url==={}-{} ，参数==={} ，报错原因==={}".format(qrg_urlName,qrg_url,qrg_data,qrg))
                     else:
-                        response.failure("报错url==={}-{} ，参数==={} ，报错原因==={}".format(qrg_urlName,qrg_url,qrg_data,qrg))
+                        response.failure("服务器响应错误==={}=={}".format(response,response.text))
         elif pay_status == 1:
             # response.success()
             print("已售罄")
@@ -113,8 +118,8 @@ class ChuangXinShiChang(TaskSet):
                     response.success()
                     return rg
                 else:
-                    response.failure("报错url==={}-{} ，参数==={} ，报错原因==={}".format(rg_urlName,rg_url,rg_data,rg))
+                    response.failure("报错url==={}{}，报错原因==={}".format(rg_urlName,rg_url,rg))
             else:
-                response.failure("服务器报错，请求url==={}-{} ，参数==={} ，报错原因==={}".format(rg_urlName,rg_url,rg_data,rg))
+                response.failure("服务器报错，响应码是==={}".format(response))
 
 
