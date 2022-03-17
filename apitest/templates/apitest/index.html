@@ -1,0 +1,156 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <!-- {#    核心组件 bootstrap JQuey#} -->
+    <link href="{% static 'apitest/bootstrap-3.4.1-dist/css/bootstrap.min.css' %}" rel="stylesheet"/>
+    <script src="{% static 'apitest/jquery/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'apitest/bootstrap-3.4.1-dist/js/bootstrap.min.js' %}"></script>
+    <!-- {#    bootstrap-table 插件#} -->
+    <script src="{% static 'apitest/js/FileSaver.min.js' %}"></script>
+    <script src="{% static 'apitest/js/xlsx.core.min.js' %}"></script> 
+    <link href="{% static 'apitest/js/bootstrap-table.min.css' %}" rel="stylesheet"/>
+    <script src="{% static 'apitest/js/bootstrap-table.min.js' %}"></script>
+    <script src="{% static 'apitest/js/bootstrap-table-zh-CN.min.js' %}"></script>
+    <script src="{% static 'apitest/js/tableExport.js' %}"></script>
+    <script src="{% static 'apitest/js/bootstrap-table-export.js' %}"></script>
+    
+
+    <title>软件接口统计页</title>
+</head>
+<body>
+<div class="container">
+    <h1>软件接口统计列表</h1>
+    <hr/>
+    <div id="toolbar" class="btn-group">
+        <button id="btn_add" type="button" class="btn btn-default" onclick="onList();">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>接口用例列表
+        </button>
+        <span id="exportToolbar" style="display: inline-block" class="btn-group">
+            <select id="sel_exportoption" class="form-control">
+                <option value="selected">导出选中数据</option>
+                <option value="basic">导出当前页数据</option>
+                <option value="all">导出全部数据</option>
+            </select>
+        </span>
+       
+    </div>
+    <table id="table" ></table>
+</div>
+</body>
+
+<script>
+    var url = 'https://examples.wenzhixin.net.cn/examples/bootstrap_table/data';
+    var columns = [
+        {
+            checkbox:true
+        },{
+            field: 'version',
+	    title: '版本'
+	}, {
+            field: 'url_name',
+            title: '接口名称'
+        }, {
+            field: 'case_number',
+            title: '测试用例条数'
+        },{
+            field: 'pass',
+            title: '通过',
+        },{
+            field: 'fail',
+            title: '未通过'
+        },{
+            field: 'unexecuted',
+            title: '未执行'
+        },{
+            field: 'passingRate',
+            title: '通过率'
+        },{
+            field: 'failureRate',
+            title: '失败率'
+        },{
+            field: 'completionRate',
+            title: '完成率'
+        },
+    ];
+
+    $("#table").bootstrapTable({
+        toolbar: '#toolbar',                //自定义工具按钮
+        url: 'getdata/',                    //请求后台的URL（*）
+        method: 'get',                      //请求方式（*）
+        dataType: "json",                   //参数格式
+        showHeader: true,                   //是否显示列头
+        showLoading: true,
+        showFullscreen: true,
+        toolbarAlign: 'left',              //工具栏对齐
+        paginationHAlign: 'right',         //分页标记 
+        searchOnEnterKey: true,
+        cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+        striped: true,                      //是否显示行间隔色
+        pagination: true,                   //是否显示分页（*）
+        maintainSelected: true,
+        pageSize: 10,                       //每页的记录行数（*）
+        pageList: [10, 20, 30 ,50, 100, 'All'], //可供选择的每页的行数（*）
+        // sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+        pageNumber: 1,                      //初始化加载第一页，默认第一页
+        search: true,                       //是否显示表格搜索
+        strictSearch: false,		        //是否全局匹配,false模糊匹配
+        showColumns: true,                  //是否显示所有的列
+        showRefresh: true,                  //是否显示刷新按钮
+        minimumCountColumns: 2,             //最少允许的列数  
+       // height: 800,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+        uniqueId: "case_number",               //每一行的唯一标识，一般为主键列
+        showToggle: true,                   //是否显示详细视图和列表视图的切换按钮
+        columns: columns, 
+        // queryParams: queryParams,        //参数 
+        queryParamsType: "limit",           //参数格式,发送标准的RESTFul类型的参数请求                   //列参数
+        silent: true,                       //刷新事件必须设置
+        detailView: false,                  //是否显示父子表
+        sortable: true,                     //是否启用排序
+        sortOrder: "desc",                   //排序方式
+        sortName: 'version',               // 要排序的字段
+        clickToSelect: true,                //是否启用点击选中行
+        showExport: true,                   //是否显示导出按钮
+        exportDataType: "selected",              //basic', 'all', 'selected'.
+        buttonsAlign:"right",               //按钮位置right
+        exportTypes:['json', 'xml', 'txt', 'sql', 'excel', 'xlsx'],       //导出文件类型
+        // Icons:'glyphicon-export',
+        Icons:'glyphicon-export icon-share',
+        idField: 'url_name',                //指定主键
+        exportOptions:{
+            ignoreColumn: [0],  //忽略某一列的索引
+            fileName: 'tableExecl',  //文件名称设置
+            worksheetName: 'sheet1',  //表格工作区名称
+            tableName: '接口统计',
+            excelstyles: ['background-color', 'color', 'font-size', 'font-weight'],
+        },
+        //展开行事件
+        onExpandRow: function (index, row, $detail) {
+            zi_table(index, row, $detail); //回调函数
+        },
+    });
+
+    $("#sel_exportoption").change(function () {
+        //刷新参数设置
+        $('#table').bootstrapTable('refreshOptions', {
+            exportDataType: $(this).val()
+        });
+    });
+
+    //定义子表函数
+    function zi_table(index, row, $detail) {
+        var fzr_table = $detail.html('<table></table>').find('table');
+        $(fzr_table).apitest({
+            url: url,
+            columns: columns,
+        })
+    }
+
+    function onList(){
+       window.location.href="http://8.131.233.25:8000/admin/apitest/case/";
+    //    window.location.href="http://127.0.0.1:8000/admin/apitest/case/";
+    }
+</script>
+</html>
