@@ -1,2 +1,2 @@
-# YouTime
-youtime python test script
+# interfaceAutotset
+interfaceAutotset python test script
