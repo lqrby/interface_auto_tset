@@ -19,4 +19,7 @@ def main():
 
 
 if __name__ == '__main__':
+    path = "D:/myObject/interface_auto_tset/interfaceAutotset.zip"
+    os.remove(path)
+    os.system("7z a D:/myObject/interface_auto_tset/interfaceAutotset.zip D:/myObject/interface_auto_tset/interfaceAutotset")
     main()
