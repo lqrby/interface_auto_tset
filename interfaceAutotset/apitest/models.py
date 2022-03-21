@@ -97,7 +97,7 @@ class Case(models.Model):
             assign_state_name = '通过'
             color_code = 'green'
         elif self.pass_or_not == 2:
-            color_code = 'red'
+            color_code = 'yellow' #'red'
             assign_state_name = '不通过'
         else:
             color_code = '#9D9D9D'
