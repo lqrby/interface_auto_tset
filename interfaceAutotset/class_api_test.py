@@ -118,8 +118,7 @@ class ClassTestCase:
         try:
             pre_fields = json.loads(field)
         except:
-            print("依赖参数错误！")
-        
+            print("依赖参数格式错误！")
         userItem = random.choice(userItems)
         if request_data and request_data.get("common"):
             if "userId" in request_data.get("common"):
@@ -144,6 +143,7 @@ class ClassTestCase:
                 pre_response = self.runCase(pre_case)
                 #前置条件断言
                 pre_assert_msg = self.assertResponse(pre_case,pre_response)
+                
                 if pre_assert_msg == 2:
                     #前置条件不通过直接返回
                     msg = "用例(id={})未执行，前置用例(id={})不通过，响应值：{}".format(id,pre_case_id,pre_response)
@@ -154,12 +154,22 @@ class ClassTestCase:
                     if not resultData:
                         msg = "用例(id={})未执行，前置用例(id={})无数据，响应值：{}".format(id,pre_case_id,pre_response)
                         return msg
-                    for key in pre_fields.get("parameter").keys():
-                        request_data["options"][key] = resultData[pre_fields.get("parameter")[key]]
-            elif pre_case_id > 0 and pre_case_id < 100:
+                    try:
+                        print("前置用例返回值：=======",resultData)
+                        for key in pre_fields.keys():
+                            if key != "result":
+                                for okey in pre_fields[key].keys():
+                                    request_data[key][okey] = resultData[pre_fields[key][okey]]
+                    except:
+                        print("请检查前置字段参数key拼写错误")
+            elif pre_case_id > 0 and pre_case_id <= 100:
                 mysqlFindData = self.dependentData.getData(pre_case_id)
-                for key in pre_fields.keys():
-                    request_data["options"][key] = mysqlFindData[pre_fields[key]]
+                try:
+                    for key in pre_fields.keys():
+                        for okey in pre_fields[key].keys():
+                            request_data[key][okey] = mysqlFindData[pre_fields[key][okey]]
+                except:
+                    print("请检查前置字段参数key拼写错误")
             req_url = domain + ":" + str(port) + url
             if port != 20020:
                 request_data = json.dumps(request_data)
@@ -184,17 +194,20 @@ class ClassTestCase:
         print("assertResponse")
         expectResult = str(case["expect_result"])
         expect_results = expectResult.split("#")
+        
         is_pass = 2
         if not response:
             return is_pass
         json_response = json.loads(response)
         res = ""
+        
         if 'common' in json_response:
             res = json_response['common']['desc']
         elif 'msg' in json_response:
             res = json_response['msg']
         else:
             res = json_response
+        
         for expect_result in expect_results:
             if expect_result in res:
                 is_pass = 1
@@ -209,54 +222,35 @@ class ClassTestCase:
         json_response = json.loads(response)
         res_num = json_response.get("common").get("reset") #响应码
         if str(res_num) == "21000":
-            if assert_type == 0:
-                return "not"
-            elif assert_type == 2:
-                return self.options_item(json_response,pre_fields.get("options"))
-            elif assert_type == 3:
-                return self.options_list(json_response,pre_fields.get("options"))
-            elif assert_type == 4:
-                return self.options_item_list(json_response,pre_fields.get("options"))
-            elif assert_type == 1:
-                return self.options(json_response)
+            return self.options_list(json_response,pre_fields.get("result"))
         else:
             print("响应码非21000")
             return False
         
-    # item = 1
-    def options(self,json_response):    
-        res_options = json_response.get("options")
-        return res_options
-            
-    # item = 2   
-    def options_item(self,json_response,key):    
-        res_options = json_response.get("options")
-        keysList = res_options[key]
-        return keysList
-        
-    # list = 3
+    
     def options_list(self,json_response,list_key): 
-        item = {}
+        resultList = {}
         res_options = json_response.get("options")
-        keysList = res_options[list(list_key.keys())[0]]
-        if keysList:
-            item = random.choice(keysList)
+        if list_key:
+            one_level_key = list(list_key.keys())[0]
+            if list_key.get(one_level_key):
+                one_level = list_key.get(one_level_key)
+                two_level_key = list(one_level)[0]
+                if list_key[one_level_key].get(two_level_key):
+                    two_level = one_level.get(two_level_key)
+                    three_level_key = list(two_level)[0]
+                    if list_key[one_level_key][two_level_key].get(three_level_key):
+                        print("居然还有第四层")
+                        return resultList
+                    else:
+                        resultList =  res_options[one_level_key][two_level_key][three_level_key]
+                else:
+                    resultList =  res_options[one_level_key][two_level_key]
+            else:
+                resultList =  res_options[one_level_key]
+        else:
+            resultList =  res_options
+        item = random.choice(resultList)
         return item
 
-    # item_list = 4
-    def options_item_list(self,json_response,item_list_key):   
-        res_options = json_response.get("options")
-        responsItem = res_options[list(item_list_key.keys())[0]]
-        keysList = list(responsItem.keys())[0]
-        item = random.choice(responsItem[keysList])
-        return item
-
-    def transmission_pre_parameters(self,request_data,resultData,pre_fields):
-        for key in pre_fields.keys():
-            request_data["options"][key] = resultData[pre_fields[key]]
-
-    def transmission_parameters(self,request_data,pre_case_id,pre_fields):
-        mysqlFindData = self.dependentData.getData(pre_case_id)
-        for key in pre_fields.keys():
-            request_data["options"][key] = mysqlFindData[pre_fields[key]]
-            
+    
