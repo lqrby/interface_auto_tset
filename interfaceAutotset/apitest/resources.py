@@ -9,6 +9,7 @@ class CaseResource(resources.ModelResource):
         import_id_fields = ('case_number',)
         fields=[
             'id',
+            'whether_version',
             'version',
             'url_name',
             'domain_or_ipaddress',
