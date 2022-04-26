@@ -1,4 +1,4 @@
-import sys, datetime, json,ast,random,requests
+import sys, datetime, json,ast,random,requests,time
 from utils.request_util import RequestUtil
 from utils.db_util import MysqlDbUtil
 from customInterface.find_dependent_data import DependentData
@@ -91,7 +91,7 @@ class ClassTestCase:
                 print("未执行,原因:已废弃、已关闭或限制执行")
                 msg = "未执行,原因:已废弃、已关闭或限制执行"
                 current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                sql = 'update apitest_case set response="{}",update_time={} where id={}'.format(msg,current_time,case_id)
+                sql = 'update apitest_case set remark="{}",update_time="{}" where id={}'.format(msg,current_time,case_id)
                 rows = self.mysqlDbUtil.execute(sql)
                 if rows:
                     print("更新完成")
@@ -105,7 +105,12 @@ class ClassTestCase:
         """
         print("runCase")
         requestData = case.get("request_parameters")
-        request_data = ast.literal_eval(requestData)
+        request_data=""
+        try:
+            request_data = ast.literal_eval(requestData)
+        except:
+            print("请求参数错误")
+            return "请求参数错误"
         interface_status = case["interface_status"]
         id = case["id"]
         run = case["run"]
@@ -125,7 +130,6 @@ class ClassTestCase:
                 request_data["common"]["userId"] = userItem.get("user_id")
             if "token" in request_data.get("common"):
                 request_data["common"]["token"] = userItem.get("pwd")
-
         if request_data and request_data.get("options"):
             user = self.dependentData.getData(1)
             if "userId" in request_data["options"]:
@@ -143,7 +147,6 @@ class ClassTestCase:
                 pre_response = self.runCase(pre_case)
                 #前置条件断言
                 pre_assert_msg = self.assertResponse(pre_case,pre_response)
-                
                 if pre_assert_msg == 2:
                     #前置条件不通过直接返回
                     msg = "用例(id={})未执行，前置用例(id={})不通过，响应值：{}".format(id,pre_case_id,pre_response)
@@ -164,12 +167,15 @@ class ClassTestCase:
                         print("请检查前置字段参数key拼写错误")
             elif pre_case_id > 0 and pre_case_id <= 100:
                 mysqlFindData = self.dependentData.getData(pre_case_id)
-                try:
-                    for key in pre_fields.keys():
-                        for okey in pre_fields[key].keys():
-                            request_data[key][okey] = mysqlFindData[pre_fields[key][okey]]
-                except:
-                    print("请检查前置字段参数key拼写错误")
+                if mysqlFindData:
+                    try:
+                        for key in pre_fields.keys():
+                            for okey in pre_fields[key].keys():
+                                request_data[key][okey] = mysqlFindData[pre_fields[key][okey]]
+                    except:
+                        print("请检查前置字段参数key拼写错误")
+                else:
+                    print("动态参数数据为空！！！！！")
             req_url = domain + ":" + str(port) + url
             if port != 20020:
                 request_data = json.dumps(request_data)

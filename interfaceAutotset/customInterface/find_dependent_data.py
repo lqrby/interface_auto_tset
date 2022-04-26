@@ -1,4 +1,4 @@
-import random,os,sys
+import random,os,sys,time
 file_path = os.path.join(os.path.abspath('.'))
 file_path = file_path.replace('\\', '/')
 sys.path.append(file_path)
@@ -8,7 +8,7 @@ class DependentData():
 
     def __init__(self):
         self.MysqlDb = MysqlDb()
-        self.app_user_sql = "select * from ourydc_app_user limit 50" # 获取用户对象1
+        self.app_user_sql = "select * from ourydc_app_user limit 50" # 获取用户对象1  { "options":{"userId":"user_id"}}
         self.chat_room_sql = "select * from ourydc_app_chat_room where room_state=1"  # 获取聊天室对象2  { "options":{"roomId":"room_id"}}
         '''
         # 语音邀请记录id 3
@@ -20,17 +20,22 @@ class DependentData():
         # 主动关闭订单id 4
         {"options":{"roomId":"room_id","orderId":"id"},"common":{"userId": "user_id"}}         
         '''
-        self.close_order_sql = "select * from ourydc_app_user_voice_chat_order where state <=2 limit 10"  # 主动关闭订单4  {"roomId":"room_id"}
+        self.close_order_sql = "select * from ourydc_app_user_voice_chat_order where state <=2 limit 10"  # 主动关闭订单4  { "options":{"orderId":"id"}}
         self.sqlList = [self.app_user_sql,self.chat_room_sql,self.invitation_record_sql,self.close_order_sql]
            
     #查询当前开播的聊天室
     def getData(self,num):
+        if num == 99:
+           return self.getTime()
         charroomList = self.MysqlDb.query(self.sqlList[num-1])
         if len(charroomList) > 0:
             return random.choice(charroomList)
         else:
             return 0
 
+    def getTime(self):
+        userLocalTimestamp = {"userLocal_Timestamp":str(int(time.time()*1000))}
+        return userLocalTimestamp
     # def get_users(self):
     #     sql = "select * from ourydc_app_user limit 50"
     #     userList = self.MysqlDb.query(sql)
