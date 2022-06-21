@@ -22,11 +22,13 @@ class DependentData():
         '''
         self.close_order_sql = "select * from ourydc_app_user_voice_chat_order where state <=2 limit 10"  # 主动关闭订单4  { "options":{"orderId":"id"}}
         self.sqlList = [self.app_user_sql,self.chat_room_sql,self.invitation_record_sql,self.close_order_sql]
-           
+
+
+    """时间戳id 99 { "options":{"userLocalTimestamp":"userLocalTimestamp"}}"""       
     #查询当前开播的聊天室
     def getData(self,num):
         if num == 99:
-           return self.getTime()
+           return {"userLocalTimestamp":self.getTime()}
         charroomList = self.MysqlDb.query(self.sqlList[num-1])
         if len(charroomList) > 0:
             return random.choice(charroomList)
@@ -34,8 +36,9 @@ class DependentData():
             return 0
 
     def getTime(self):
-        userLocalTimestamp = {"userLocal_Timestamp":str(int(time.time()*1000))}
-        return userLocalTimestamp
+        # userLocalTimestamp = {"userLocal_Timestamp":str(int(time.time()*1000))}
+
+        return str(int(time.time()*1000))
     # def get_users(self):
     #     sql = "select * from ourydc_app_user limit 50"
     #     userList = self.MysqlDb.query(sql)

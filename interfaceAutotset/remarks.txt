@@ -3,6 +3,13 @@
 2. D:\myObject\interface_automation\interfaceAutotset_linux\interfaceAutotset\settings.py中数据库修改为服务器数据库地址
 3. D:\myObject\interface_automation\interfaceAutotset_linux\apitest\resources.py 中是否增减字段。
 4. D:\myObject\interface_automation\interfaceAutotset_linux\utils\db_util.py 修改成服务器数据库地址
+python3 manage.py makemigrations
+python manage.py makemigrations
+python3 manage.py migrate
+python manage.py migrate
+python3 manage.py runserver 
+python manage.py runserver
+http://127.0.0.1:8000/admin
 
 
 
