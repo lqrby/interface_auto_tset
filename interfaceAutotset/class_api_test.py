@@ -1,7 +1,8 @@
 import sys, datetime, json,ast,random,requests,time
 from utils.request_util import RequestUtil
 from utils.db_util import MysqlDbUtil
-from customInterface.find_dependent_data import DependentData
+# from customInterface.find_dependent_data import DependentData
+from customInterface.query_data_base import DependentData
 from user_data import userItems
 
 class ClassTestCase:
@@ -109,8 +110,8 @@ class ClassTestCase:
         try:
             request_data = ast.literal_eval(requestData)
         except:
-            print("请求参数错误")
-            return "请求参数错误"
+            print("请求参数格式错误")
+            return "请求参数格式错误"
         interface_status = case["interface_status"]
         id = case["id"]
         run = case["run"]
@@ -124,7 +125,9 @@ class ClassTestCase:
             pre_fields = json.loads(field)
         except:
             print("依赖参数格式错误！")
+            return "依赖参数格式错误！"
         userItem = random.choice(userItems)
+        print("user=======",userItem)
         if request_data and request_data.get("common"):
             if "userId" in request_data.get("common"):
                 request_data["common"]["userId"] = userItem.get("user_id")
@@ -165,6 +168,7 @@ class ClassTestCase:
                                     request_data[key][okey] = resultData[pre_fields[key][okey]]
                     except:
                         print("请检查前置字段参数key拼写错误")
+                        return "请检查前置字段参数key拼写错误"
             elif pre_case_id > 0 and pre_case_id <= 100:
                 mysqlFindData = self.dependentData.getData(pre_case_id)
                 if mysqlFindData:
@@ -174,8 +178,10 @@ class ClassTestCase:
                                 request_data[key][okey] = mysqlFindData[pre_fields[key][okey]]
                     except:
                         print("请检查前置字段参数key拼写错误")
+                        return "请检查前置字段参数key拼写错误"
                 else:
-                    print("动态参数数据为空！！！！！")
+                    print("数据库数据为空！！！！！")
+                    return "数据库数据为空！！！！！"
             req_url = domain + ":" + str(port) + url
             if port != 20020:
                 request_data = json.dumps(request_data)
@@ -200,13 +206,14 @@ class ClassTestCase:
         print("assertResponse")
         expectResult = str(case["expect_result"])
         expect_results = expectResult.split("#")
-        
         is_pass = 2
-        if not response:
-            return is_pass
-        json_response = json.loads(response)
+        # if not response:
+        #     return is_pass
+        try:
+            json_response = json.loads(response)
+        except:
+            json_response=response
         res = ""
-        
         if 'common' in json_response:
             res = json_response['common']['desc']
         elif 'msg' in json_response:

@@ -84,28 +84,28 @@ DATABASES = {
     # }
 
     #压测服务器数据库
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'autotest', #要连接的数据库名称
-        'USER':'liuyang',
-        'PASSWORD':'lY@6083',
-        'HOST':'8.131.233.25',
-        'PORT':'3306',
-        'OPTIONS':{'charset':'utf8mb4'},
-        'ssl':{'ssl':{}}
-    }
-
-    #本地数据库
     # 'default': {
     #     'ENGINE': 'django.db.backends.mysql',
     #     'NAME': 'autotest', #要连接的数据库名称
-    #     'USER':'root',
-    #     'PASSWORD':'ren123456',
-    #     'HOST':'localhost',
+    #     'USER':'liuyang',
+    #     'PASSWORD':'lY@6083',
+    #     'HOST':'8.131.233.25',
     #     'PORT':'3306',
     #     'OPTIONS':{'charset':'utf8mb4'},
     #     'ssl':{'ssl':{}}
     # }
+
+    #本地数据库
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'autotest', #要连接的数据库名称
+        'USER':'root',
+        'PASSWORD':'ren123456',
+        'HOST':'localhost',
+        'PORT':'3306',
+        'OPTIONS':{'charset':'utf8mb4'},
+        'ssl':{'ssl':{}}
+    }
 }
 
 

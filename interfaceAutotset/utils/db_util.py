@@ -14,8 +14,8 @@ filterwarnings("ignore",category=pymysql.Warning)
 class MysqlDbUtil:
     def __init__(self):
         #建立数据库连接
-        self.conn = pymysql.connect(host='8.131.233.25',port=3306,user='liuyang',password='lY@6083',db='autotest',charset='utf8')
-        # self.conn = pymysql.connect(host='localhost',port=3306,user='root',password='ren123456',db='autotest',charset='utf8mb4')
+        # self.conn = pymysql.connect(host='8.131.233.25',port=3306,user='liuyang',password='lY@6083',db='autotest',charset='utf8')
+        self.conn = pymysql.connect(host='localhost',port=3306,user='root',password='ren123456',db='autotest',charset='utf8mb4')
         self.cursors = self.conn.cursor(cursor=pymysql.cursors.DictCursor)
 
     def __del__(self):

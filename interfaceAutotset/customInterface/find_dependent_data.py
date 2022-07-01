@@ -8,16 +8,19 @@ class DependentData():
 
     def __init__(self):
         self.MysqlDb = MysqlDb()
+        '''1.用户列表'''
         self.app_user_sql = "select * from ourydc_app_user limit 50" # 获取用户对象1  { "options":{"userId":"user_id"}}
+        '''2.聊天室列表'''
         self.chat_room_sql = "select * from ourydc_app_chat_room where room_state=1"  # 获取聊天室对象2  { "options":{"roomId":"room_id"}}
+
         '''
-        # 语音邀请记录id 3
+        # 3.语音邀请记录列表
         { "options":{"orderId":"order_id"}, "common":{"userId": "to_user_id"}}   
         '''
         self.invitation_record_sql = """select r.order_id,r.from_user_id,r.to_user_id, r.type,r.state,o.state from ourydc_app_user_voice_chat_order as o,
                 ourydc_app_voice_order_invitation_record as r where o.id=r.order_id and o.state <= 2 and r.state = 5 limit 100 """  
         '''
-        # 主动关闭订单id 4
+        # 4.关闭订单列表
         {"options":{"roomId":"room_id","orderId":"id"},"common":{"userId": "user_id"}}         
         '''
         self.close_order_sql = "select * from ourydc_app_user_voice_chat_order where state <=2 limit 10"  # 主动关闭订单4  { "options":{"orderId":"id"}}
