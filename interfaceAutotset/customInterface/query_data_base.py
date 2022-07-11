@@ -10,7 +10,7 @@ class DependentData():
     def __init__(self):
         self.MysqlDb = MysqlDb()
         '''1.用户列表'''
-        user_sql = "select * from ourydc_app_user limit 50" # 获取用户对象1  { "options":{"userId":"user_id"}}
+        user_sql = "select * from ourydc_app_user limit 50" # 获取用户对象1  {"options":{"userId":"user_id"}}
         '''2.聊天室列表'''
         chat_room_sql = "select * from ourydc_app_chat_room where room_state=1"  # 获取聊天室对象2  { "options":{"roomId":"room_id"}}
 
@@ -28,7 +28,7 @@ class DependentData():
         order_sql = "select * from ourydc_app_user_voice_chat_order where state <=2 limit 10"  # 主动关闭订单4  { "options":{"orderId":"id"}}
 
         '''5.动态列表'''
-        dynamic_sql = "select * from ourydc_app_user_dynamic order by insdt limit 20"
+        dynamic_sql = "select * from ourydc_app_user_dynamic order by insdt limit 20"  #{"options":{"dynamicId":"id"}}
 
         # '''6.关注列表'''
         # follow_sql = "select * from ourydc_app_user_dynamic order by insdt limit 20"

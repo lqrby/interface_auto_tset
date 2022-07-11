@@ -4,6 +4,7 @@ from utils.db_util import MysqlDbUtil
 # from customInterface.find_dependent_data import DependentData
 from customInterface.query_data_base import DependentData
 from user_data import userItems
+from utils.checksum import CheckSumBuilder
 
 class ClassTestCase:
 
@@ -11,6 +12,7 @@ class ClassTestCase:
         self.requestUtil = RequestUtil()
         self.mysqlDbUtil = MysqlDbUtil()
         self.dependentData = DependentData()
+        self.CheckSumBuilder = CheckSumBuilder()
 
     def loadAllCase(self):
         """
@@ -106,9 +108,12 @@ class ClassTestCase:
         """
         print("runCase")
         requestData = case.get("request_parameters")
+        requestData = str(requestData).replace('_x000D_','')
+        # print(66666,type(requestData),requestData)
         request_data=""
         try:
             request_data = ast.literal_eval(requestData)
+            request_data
         except:
             print("请求参数格式错误")
             return "请求参数格式错误"
@@ -120,6 +125,7 @@ class ClassTestCase:
         method = case["method"]
         url = case["url"]
         field = case["pre_fields"]
+        headers = case["headers"]
         pre_fields={}
         try:
             pre_fields = json.loads(field)
@@ -185,9 +191,16 @@ class ClassTestCase:
             req_url = domain + ":" + str(port) + url
             if port != 20020:
                 request_data = json.dumps(request_data)
+            if headers:
+                headers = json.loads(headers)
+                auto_headers = self.CheckSumBuilder.getHeaders()
+                for p_key,p_value in auto_headers.items():
+                    if headers.get(p_key):
+                        headers[p_key] = p_value
+                print("headers===",headers)
             print("url===",req_url)
             print("data===",request_data)
-            scr_result = self.requestUtil.customRequest(req_url,method,param=request_data)
+            scr_result = self.requestUtil.customRequest(req_url,method,param=request_data,headers=headers)
             if "200" in str(scr_result):
                 return scr_result.text
             else:

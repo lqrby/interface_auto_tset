@@ -13,45 +13,12 @@ http://127.0.0.1:8000/admin
 
 
 
-2. userid -- 1，roomid -- 2
-3.话题详情列表 -- 5034
-4. 广场动态列表 -- 5067 
-5. 我的动态 -- 4755    
+接口自动化回归测试记录
+2022.07.11 不通过用例共17个，
+    （1）打开甜蜜小屋10个，原因：服务器时间不准确。
+    （2）邀请状态变更3个，原因：暂无邀请记录。
+    （3）同意或拒绝上麦1个，该接口预留，因为需要去rides查询toUserId
+     (4) 语音订单续费1个，原因：暂无订单
+     （5）主动关闭订单2个，原因：暂无订单
 
-
-
-
-
-广场推荐--动态列表(5067):{
-    "options":{
-        "dynamicNewInfoList":[] 
-    },
-    "parameter": {
-        "dynamicId":"id"
-    }
-
-}
-
-
-{
-    "options":{
-        "roomId":[]
-    },
-    "parameter": {
-        "dynamicId":"id"
-    }
-
-}
-
-房间id(2):{"roomId":"room_id"}
-
-我的动态id(4993):{
-    "options":{
-        "dynamicNewInfoList":[]
-    },
-    "parameter": {
-        "dynamicId":"id"
-    }
-
-}
 
