@@ -25,7 +25,7 @@ class DependentData():
         # 4.关闭订单列表
         {"options":{"roomId":"room_id","orderId":"id"},"common":{"userId": "user_id"}}         
         '''
-        order_sql = "select * from ourydc_app_user_voice_chat_order where state <=2 limit 10"  # 主动关闭订单4  { "options":{"orderId":"id"}}
+        order_sql = "select * from ourydc_app_user_voice_chat_order where state <=2 limit 10"  # 主动关闭订单4  {"options":{"roomId":"room_id","orderId":"id"}}
 
         '''5.动态列表'''
         dynamic_sql = "select * from ourydc_app_user_dynamic order by insdt limit 20"  #{"options":{"dynamicId":"id"}}

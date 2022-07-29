@@ -11,7 +11,7 @@ class DependentData():
         '''1.用户列表'''
         self.app_user_sql = "select * from ourydc_app_user limit 50" # 获取用户对象1  { "options":{"userId":"user_id"}}
         '''2.聊天室列表'''
-        self.chat_room_sql = "select * from ourydc_app_chat_room where room_state=1"  # 获取聊天室对象2  { "options":{"roomId":"room_id"}}
+        self.chat_room_sql = "select * from ourydc_app_chat_room where room_state=1"  # 获取聊天室对象2  {"options":{"roomId":"room_id"}}
 
         '''
         # 3.语音邀请记录列表
@@ -51,6 +51,6 @@ class DependentData():
     #         return 0
 
 if __name__ == "__main__":
-    res = DependentData().find_launch_chat_room()
+    res = DependentData().getData(2)
     print(res)
 
