@@ -57,9 +57,9 @@ class MysqlDbUtil:
 if __name__ == "__main__":
     # r = MysqlDb().query("select * from `case`"
     # sql = "INSERT INTO `case` (app,module,run) VALUES('youtime','user','yes');"
-    # sql = "select room_id from ourydc_app_chat_room where identity_id='1001032'"  #查询房间id
+    sql = "select room_id from ourydc_app_chat_room where identity_id='100102900'"  #查询房间id
     # sql = "select room_id from ourydc_app_chat_room where room_manager = '0002021092815305052200'"
-    sql = "select * from apitest_case"
+    # sql = "select * from apitest_case"
     # sql = "update ourydc_app_new_package set dt='2021-10-19',status=1"
     r = MysqlDbUtil().query(sql) 
     print(r)
